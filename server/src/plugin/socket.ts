@@ -8,14 +8,14 @@ export function registerSocket(app: FastifyInstance) {
 
   // Auth middleware
   io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
+    const token =
+      socket.handshake.auth?.token || socket.handshake.headers?.token;
     if (!token) return next(new Error("Unauthorized"));
 
     try {
       const decoded = app.jwt.verify(token) as {
         id: string;
         username: string;
-        role: string;
       };
       socket.data.user = decoded;
       next();
@@ -29,9 +29,9 @@ export function registerSocket(app: FastifyInstance) {
     console.log(`${user.username} connected [${socket.id}]`);
 
     // Join room
-    socket.on("join_room", (channelId: string) => {
+    socket.on("join_channel", (channelId: string) => {
       socket.join(channelId);
-      console.log(`${user.username} joined room ${channelId}`);
+      console.log(`${user.username} joined channel ${channelId}`);
     });
 
     // Send message to room
