@@ -5,6 +5,7 @@ import jwt from "@fastify/jwt";
 import fastifyIO from "fastify-socket.io";
 import { registerSocket } from "./plugin/socket";
 import authRoutes from "./routes/auth";
+import messageRoutes from "./routes/message";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.ready().then(() => {
 });
 
 app.register(authRoutes, { prefix: "/api/auth" });
+app.register(messageRoutes, { prefix: "/api/message" });
 
 const start = async () => {
   try {
