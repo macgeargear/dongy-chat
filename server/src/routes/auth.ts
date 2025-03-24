@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 
 const authRoutes: FastifyPluginAsync = async (app) => {
   app.post("/signup", async (req, reply) => {
-    const { username, password } = req.body as {
+    const { username, password, displayName } = req.body as {
       username: string;
       password: string;
+      displayName: string;
     };
 
     const existing = await prisma.user.findUnique({ where: { username } });
@@ -17,7 +18,7 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     const hashed = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { username, password: hashed },
+      data: { username, password: hashed, displayName },
     });
 
     const token = app.jwt.sign({
