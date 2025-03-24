@@ -24,7 +24,7 @@ app.register(authRoutes, { prefix: "/api/auth" });
 
 const start = async () => {
   try {
-    await app.listen({ port: 3001, host: "0.0.0.0" });
+    await app.listen({ port: 3006, host: "0.0.0.0" });
     console.log(`Server listening on ${app.server.address()}`);
   } catch (err) {
     app.log.error(err);

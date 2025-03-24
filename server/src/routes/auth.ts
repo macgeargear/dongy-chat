@@ -7,7 +7,6 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     const { username, password } = req.body as {
       username: string;
       password: string;
-      role?: string; // default: user
     };
 
     const existing = await prisma.user.findUnique({ where: { username } });
