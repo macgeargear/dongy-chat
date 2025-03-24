@@ -11,10 +11,11 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  password String
-  username String    @unique
-  Channel  Channel[]
+  id          String    @id @default(uuid())
+  password    String
+  username    String    @unique
+  displayName String    @default("Unknown")
+  Channel     Channel[]
 }
 
 model Message {

@@ -28,7 +28,7 @@ export function registerSocket(app: FastifyInstance) {
     const user = socket.data.user;
     console.log(`${user.username} connected [${socket.id}]`);
 
-    // Join room
+    // Join channel
     socket.on("join_channel", (channelId: string) => {
       socket.join(channelId);
       console.log(`${user.username} joined channel ${channelId}`);
