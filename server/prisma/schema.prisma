@@ -21,7 +21,7 @@ model Message {
   id        String   @id @default(uuid())
   content   String
   createdAt DateTime @default(now())
-  channelID Int
+  channelId String
   userId    String
 }
 
