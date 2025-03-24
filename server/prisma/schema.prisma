@@ -11,27 +11,35 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
-  username String
+  id       String    @id @default(uuid())
+  password String
+  username String    @unique
   Channel  Channel[]
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   content   String
   createdAt DateTime @default(now())
   channelID Int
-  userId    Int
+  userId    String
 }
 
 model Channel {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   type      String
-  ownerId   Int
+  ownerId   String
   users     User[]
 }
 
+model ReadMessage {
+  messageId String
+  channelId String
+  userId    String
+  updatedAt DateTime @updatedAt
+
+  @@id([channelId, userId])
+}
