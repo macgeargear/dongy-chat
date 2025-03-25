@@ -51,8 +51,11 @@ export default function CreateChannelDialog({
       userIds: [] as string[],
     },
     validators: {
-      onSubmit: schema.parse,
+      onChange: (value) => {
+        console.log("Form value changed:", value.value);
+      },
     },
+
     onSubmit: async ({ value }) => {
       onSubmit(value);
       setOpen(false);

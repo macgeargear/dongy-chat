@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockChannels } from "@/lib/mocks";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Loader2Icon,
