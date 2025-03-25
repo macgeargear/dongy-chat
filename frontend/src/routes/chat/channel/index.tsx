@@ -23,7 +23,6 @@ function RouteComponent() {
     includeMembers: true,
     includeMessages: true,
   });
-  console.log({ channels });
   const createChannel = useCreateChannel();
 
   const handleCreateChannel = (data: CreateChannelInput) => {

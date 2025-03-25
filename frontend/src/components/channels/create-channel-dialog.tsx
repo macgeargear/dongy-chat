@@ -54,7 +54,6 @@ export default function CreateChannelDialog({
       onSubmit: schema.parse,
     },
     onSubmit: async ({ value }) => {
-      console.log({ value });
       onSubmit(value);
       setOpen(false);
     },
