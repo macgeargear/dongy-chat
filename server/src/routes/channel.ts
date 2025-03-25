@@ -131,7 +131,6 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
       return reply.status(500).send({ error: "Failed to delete the channel." });
     }
   });
-  
 };
 
 export default channelRoutes;

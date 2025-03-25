@@ -29,24 +29,13 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
+import { mockChannels, mockInbox } from "@/lib/mocks";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
   { title: "All users", to: "/chat", icon: InboxIcon },
-  { title: "All Channels", to: "/chat", icon: GroupIcon },
+  { title: "All Channels", to: "/chat/channel", icon: GroupIcon },
   { title: "Settings", to: "/chat/settings", icon: SettingsIcon },
-];
-
-const mockChannels: { name: string; theme: string }[] = [
-  { name: "General", theme: "light" },
-  { name: "Announcements", theme: "dark" },
-  { name: "Random", theme: "light" },
-];
-
-const mockInbox: { username: string; id: string }[] = [
-  { username: "John Doe", id: "1" },
-  { username: "Jane Doe", id: "2" },
-  { username: "Bob Smith", id: "3" },
 ];
 
 export function ChatSidebar() {
