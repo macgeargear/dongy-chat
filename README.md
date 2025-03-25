@@ -9,14 +9,18 @@
 - **PUT /api/users/:id**: Update a user's information.
 - **DELETE /api/users/:id**: Delete a user.
 
-**Channel**
-- **GET /api/channels**: Retrieve a list of all channels.
-- **GET /api/channels/:id**: Retrieve a specific channel by ID.
-- **POST /api/channels**: Create a new channel.
-- **PUT /api/channels/:id**: Update a channel's information.
-- **DELETE /api/channels/:id**: Delete a channel.
-- **POST /api/channels/user/:user_id**: Add a user to a channel.
-- **DELETE /api/channels/uesr/:user_id**: Remove a user from a channel.
+ **Channel**
+- **GET /api/channel**: Retrieve a list of all channels.
+- **GET /api/channel/:id**: Retrieve a specific channel by ID.
+- **POST /api/channel**: Create a new channel.
+- **PUT /api/channel/:id**: Update a channel's information.
+- **DELETE /api/channel/:id**: Delete a channel.
+
+**Channel-Member**
+- **GET /api/channel-member/?userId=&channelId=** Retrieve channel by user_id or user by channel_id
+- **PUT /api/channel-member/**: Update a channel-member's information.
+- **POST /api/channel-member/**: Add a user to a channel.
+- **DELETE /api/channel-member/:user_id?channelid**: Remove a user from a channel.
 
 **Message**
 - **GET /api/messages**: Retrieve a list of all messages.
