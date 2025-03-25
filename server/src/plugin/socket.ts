@@ -2,6 +2,11 @@ import { FastifyInstance } from "fastify";
 import { Server } from "socket.io";
 import prisma from "../utils/prisma";
 
+export const activeUsers = new Map<
+  string,
+  { socketId: string; lastActive: Date | null }
+>();
+
 export function registerSocket(app: FastifyInstance) {
   // const io: Server = app.io;
   const io = (app as any).io as Server;
@@ -34,6 +39,26 @@ export function registerSocket(app: FastifyInstance) {
       console.log(`${user.username} joined channel ${channelId}`);
     });
 
+    // Get active users in each room
+    socket.on("get_active_users_in_room", (conversationId: string) => {
+      const room = io.sockets.adapter.rooms.get(
+        `conversation:${conversationId}`,
+      );
+
+      const usersInRoom = room ? Array.from(room) : [];
+
+      const activeUsersInRoom = usersInRoom
+        .map((socketId) => {
+          const user = Array.from(activeUsers.values()).find(
+            (user) => user.socketId === socketId,
+          );
+          return user ? { userId: user.socketId } : null;
+        })
+        .filter((user) => user !== null);
+
+      socket.emit("activeUsersInRoom", activeUsersInRoom);
+    });
+
     // Send message to room
     socket.on(
       "send_message",
@@ -53,7 +78,7 @@ export function registerSocket(app: FastifyInstance) {
         });
 
         io.to(channelId).emit("receive_message", message);
-      }
+      },
     );
 
     // Typing events

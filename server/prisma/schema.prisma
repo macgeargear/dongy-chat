@@ -36,6 +36,7 @@ model Channel {
   updatedAt      DateTime        @updatedAt
   isPrivate      Boolean         @default(true)
   messages       Message[]
+  theme          String
   channelMembers ChannelMember[]
 }
 
