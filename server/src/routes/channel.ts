@@ -131,72 +131,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
       return reply.status(500).send({ error: "Failed to delete the channel." });
     }
   });
-  // Add a user to the channel
-  app.post("/user", { preHandler: requireAuth }, async (req, reply) => {
-    const { userId, channelId } = req.body as {
-      userId: string;
-      channelId: string;
-    };
-    if (!userId || !channelId) {
-      return reply.status(400).send({ error: "Invalid input." });
-    }
-    try {
-      const channel = await prisma.channel.findFirst({
-        where: {
-          id: channelId,
-        },
-      });
-      if (!channel)
-        return reply.status(404).send({ error: "channel not found" });
-      const cnt = await prisma.channelMember.count({
-        where: {
-          channelId: channelId,
-        },
-      });
-      if (channel.isPrivate && cnt == 2)
-        return reply
-          .status(500)
-          .send({ error: "Private channel cannot exceed 2 members" });
-      const newChannelMember = await prisma.channelMember.create({
-        data: {
-          latestSeenMessageId: "",
-          channelId,
-          userId,
-        },
-      });
-      return reply.status(200).send(newChannelMember);
-    } catch (error) {
-      console.error("Error deleting channel:", error);
-      return reply.status(500).send({ error: "Failed to delete the channel." });
-    }
-  });
-  app.delete(
-    "/user/:user_id",
-    { preHandler: requireAuth },
-    async (req, reply) => {
-      const { user_id: userId } = req.params as { user_id: string };
-      const { channelId } = req.query as { channelId: string };
-      if (!channelId || !userId)
-        return reply.status(400).send({ error: "Invalid inputs" });
-
-      try {
-        const deletedChannelMember = await prisma.channelMember.delete({
-          where: {
-            channelId_userId: {
-              userId,
-              channelId,
-            },
-          },
-        });
-        return reply.status(200).send(deletedChannelMember);
-      } catch (error) {
-        console.error("Error deleting channel member:", error);
-        return reply
-          .status(500)
-          .send({ error: "Failed to delete channel member." });
-      }
-    }
-  );
+  
 };
 
 export default channelRoutes;
