@@ -6,12 +6,11 @@ import fastifyIO from "fastify-socket.io";
 import { registerSocket } from "./plugin/socket";
 import authRoutes from "./routes/auth";
 import messageRoutes from "./routes/message";
+import channelRoutes from "./routes/channel";
 
 dotenv.config();
 
-const app = Fastify({
-  // logger: true,
-});
+const app = Fastify();
 
 app.register(cors, { origin: true });
 app.register(jwt, { secret: process.env.JWT_SECRET! });
@@ -23,6 +22,7 @@ app.ready().then(() => {
 
 app.register(authRoutes, { prefix: "/api/auth" });
 app.register(messageRoutes, { prefix: "/api/message" });
+app.register(channelRoutes, { prefix: "/api/channel" });
 
 const start = async () => {
   try {
