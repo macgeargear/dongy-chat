@@ -12,12 +12,26 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as ChatIndexImport } from './routes/chat/index'
+import { Route as AuthIndexImport } from './routes/auth/index'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChatIndexRoute = ChatIndexImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthIndexRoute = AuthIndexImport.update({
+  id: '/auth/',
+  path: '/auth/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +46,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth/': {
+      id: '/auth/'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/chat/': {
+      id: '/chat/'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthIndexRoute
+  '/chat': typeof ChatIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthIndexRoute
+  '/chat': typeof ChatIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/auth/': typeof AuthIndexRoute
+  '/chat/': typeof ChatIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/chat'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/chat'
+  id: '__root__' | '/' | '/auth/' | '/chat/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthIndexRoute: typeof AuthIndexRoute
+  ChatIndexRoute: typeof ChatIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthIndexRoute: AuthIndexRoute,
+  ChatIndexRoute: ChatIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +115,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/auth/",
+        "/chat/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/auth/": {
+      "filePath": "auth/index.tsx"
+    },
+    "/chat/": {
+      "filePath": "chat/index.tsx"
     }
   }
 }

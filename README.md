@@ -29,3 +29,4 @@
 - ~~Auth~~
 - ~~Typing~~
 - Delete message
+- Latest Read
