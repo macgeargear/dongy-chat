@@ -7,7 +7,7 @@ import { registerSocket } from "./plugin/socket";
 import authRoutes from "./routes/auth";
 import messageRoutes from "./routes/message";
 import channelRoutes from "./routes/channel";
-import channelMemberRoutes from "./routes/channelMember";
+import channelMemberRoutes from "./routes/channel-member";
 
 dotenv.config();
 
