@@ -7,6 +7,7 @@ import { registerSocket } from "./plugin/socket";
 import authRoutes from "./routes/auth";
 import messageRoutes from "./routes/message";
 import channelRoutes from "./routes/channel";
+import channelMemberRoutes from "./routes/channelMember";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.ready().then(() => {
 app.register(authRoutes, { prefix: "/api/auth" });
 app.register(messageRoutes, { prefix: "/api/message" });
 app.register(channelRoutes, { prefix: "/api/channel" });
+app.register(channelMemberRoutes, { prefix: "/api/channel-member" });
 
 const start = async () => {
   try {
