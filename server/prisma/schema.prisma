@@ -15,7 +15,8 @@ model User {
   password       String
   username       String          @unique
   displayName    String          @default("Unknown")
-  ChannelMembers ChannelMember[]
+  channelMembers ChannelMember[]
+  messages       Message[]
 }
 
 model Message {
@@ -24,7 +25,8 @@ model Message {
   createdAt DateTime @default(now())
   channelId String
   channel   Channel  @relation(fields: [channelId], references: [id])
-  userId    String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
 }
 
 model Channel {
@@ -32,7 +34,7 @@ model Channel {
   name           String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  type           String
+  isPrivate      Boolean         @default(true)
   messages       Message[]
   channelMembers ChannelMember[]
 }
