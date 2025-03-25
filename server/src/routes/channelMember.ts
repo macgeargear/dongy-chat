@@ -25,6 +25,7 @@ const channelMemberRoutes: FastifyPluginAsync = async (app) => {
         },
         include: {
           channel: true,
+          user: true,
         },
       });
       return reply.status(200).send(channelMember);
