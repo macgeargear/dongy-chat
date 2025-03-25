@@ -11,11 +11,12 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  password    String
-  username    String    @unique
-  displayName String    @default("Unknown")
-  Channel     Channel[]
+  id             String          @id @default(uuid())
+  password       String
+  username       String          @unique
+  displayName    String          @default("Unknown")
+  channelMembers ChannelMember[]
+  messages       Message[]
 }
 
 model Message {
@@ -23,24 +24,29 @@ model Message {
   content   String
   createdAt DateTime @default(now())
   channelId String
-  userId    String
+  channel   Channel  @relation(fields: [channelId], references: [id])
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
 }
 
 model Channel {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  type      String
-  ownerId   String
-  users     User[]
+  id             String          @id @default(uuid())
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  isPrivate      Boolean         @default(true)
+  messages       Message[]
+  channelMembers ChannelMember[]
 }
 
-model ReadMessage {
-  messageId String
-  channelId String
-  userId    String
-  updatedAt DateTime @updatedAt
+model ChannelMember {
+  latestSeenMessageId String
+  channelId           String
+  channel             Channel  @relation(fields: [channelId], references: [id])
+  userId              String
+  user                User     @relation(fields: [userId], references: [id])
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@id([channelId, userId])
 }

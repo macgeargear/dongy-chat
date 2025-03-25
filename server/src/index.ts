@@ -10,7 +10,7 @@ import messageRoutes from "./routes/message";
 dotenv.config();
 
 const app = Fastify({
-  logger: true,
+  // logger: true,
 });
 
 app.register(cors, { origin: true });

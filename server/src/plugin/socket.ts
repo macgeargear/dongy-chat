@@ -46,7 +46,7 @@ export function registerSocket(app: FastifyInstance) {
       }) => {
         const message = await prisma.message.create({
           data: {
-            userId: user.id,
+            senderId: user.id,
             channelId,
             content,
           },
