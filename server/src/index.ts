@@ -10,9 +10,7 @@ import channelRoutes from "./routes/channel";
 
 dotenv.config();
 
-const app = Fastify({
-  logger: true,
-});
+const app = Fastify();
 
 app.register(cors, { origin: true });
 app.register(jwt, { secret: process.env.JWT_SECRET! });

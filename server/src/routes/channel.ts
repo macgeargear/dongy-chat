@@ -43,16 +43,16 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
 
   // Create a new channel
   app.post("/", { preHandler: requireAuth }, async (req, reply) => {
-    const { name, isPrivate, members } = req.body as {
+    const { name, isPrivate, userIds } = req.body as {
       name: string;
       isPrivate: boolean;
-      members: string[];
+      userIds: string[];
     };
 
-    if (!name || typeof isPrivate === "undefined" || members.length == 0) {
+    if (!name || typeof isPrivate === "undefined" || userIds.length == 0) {
       return reply.status(400).send({ error: "Invalid input." });
     }
-    if (members.length > 2 && isPrivate) {
+    if (userIds.length > 2 && isPrivate) {
       return reply
         .status(500)
         .send({ error: "Private chat cannot exceed 2 members" });
@@ -65,8 +65,8 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
         },
       });
 
-      if (members && members.length > 0) {
-        const channelMembers = members.map((userId) => ({
+      if (userIds && userIds.length > 0) {
+        const channelMembers = userIds.map((userId) => ({
           channelId: newChannel.id,
           userId: userId,
           latestSeenMessageId: "",
