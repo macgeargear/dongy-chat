@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth";
 import messageRoutes from "./routes/message";
 import channelRoutes from "./routes/channel";
 import channelMemberRoutes from "./routes/channel-member";
+import userRoutes from "./routes/user";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.ready().then(() => {
   registerSocket(app);
 });
 
+app.register(userRoutes, { prefix: "/api/user" });
 app.register(authRoutes, { prefix: "/api/auth" });
 app.register(messageRoutes, { prefix: "/api/message" });
 app.register(channelRoutes, { prefix: "/api/channel" });
