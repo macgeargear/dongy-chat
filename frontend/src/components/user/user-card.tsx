@@ -8,7 +8,21 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { getStatusText, statusColors } from "@/lib/utils";
-import { MessageCircle, MoreHorizontal, UsersIcon } from "lucide-react";
+import {
+  MessageCircle,
+  MoreHorizontal,
+  UsersIcon,
+  Eye,
+  BellOff,
+  Ban,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface UserCardProps {
   user: User;
@@ -21,66 +35,72 @@ export function UserCard({
   onDirectMessage,
   onGroupChat,
 }: UserCardProps) {
+  const statusColor = statusColors["online"]; // You could make this dynamic
+
   return (
-    <Card className="overflow-hidden transition-all duration-200 hover:shadow-md border border-border/60 rounded-lg">
-      <CardContent className="p-5 relative">
+    <Card className="transition-shadow duration-200 border border-border/60 hover:shadow-md rounded-xl overflow-hidden">
+      <CardContent className="p-5">
         <div className="flex items-center gap-4">
           <div className="relative">
-            {/* <Avatar className="h-14 w-14 border border-border/40">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="bg-primary/5 text-primary font-medium">
-                {getInitials(user.name)}
+            <Avatar className="h-14 w-14 ring-2 ring-offset-2 ring-offset-background ring-primary/50">
+              <AvatarImage
+                src={`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${encodeURIComponent(user.displayName)}`}
+                alt={user.displayName}
+              />
+              <AvatarFallback className="bg-muted text-muted-foreground font-medium">
+                {user.displayName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
-            </Avatar> */}
-
-            {/* Status indicator */}
+            </Avatar>
             <span
-              className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${statusColors["online"]}`}
+              className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${statusColor}`}
               aria-hidden="true"
             />
           </div>
 
           <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-base text-foreground">
-                {user.displayName}
-              </h3>
-            </div>
-
-            <div className="flex flex-col mt-1 gap-1">
-              <span className="text-xs text-muted-foreground">
-                {getStatusText("online")}
-              </span>
-            </div>
+            <h3 className="text-lg font-semibold text-foreground">
+              {user.displayName}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {getStatusText("online")}
+            </p>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between p-3 bg-muted/20 border-t border-border/30">
+      <CardFooter className="flex items-center justify-between p-3 bg-muted/30 border-t border-border/30">
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="secondary"
-            className="bg-primary/10 hover:bg-primary/20 text-primary border-0"
-            onClick={() => {
-              if (onDirectMessage) onDirectMessage(user.id);
-            }}
-          >
-            <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-            DM
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="text-primary flex items-center gap-1"
+                  onClick={() => onDirectMessage?.(user.id)}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  DM
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Send a direct message</TooltipContent>
+            </Tooltip>
 
-          <Button
-            size="sm"
-            variant="outline"
-            className="bg-background/80 hover:bg-background border-border/40"
-            onClick={() => {
-              if (onGroupChat) onGroupChat(user.id);
-            }}
-          >
-            <UsersIcon className="h-3.5 w-3.5 mr-1.5" />
-            Group
-          </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="bg-background hover:bg-muted"
+                  onClick={() => onGroupChat?.(user.id)}
+                >
+                  <UsersIcon className="h-4 w-4" />
+                  Group
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add to group chat</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <DropdownMenu>
@@ -88,16 +108,25 @@ export function UserCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full hover:bg-muted"
             >
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">More options</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>View Profile</DropdownMenuItem>
-            <DropdownMenuItem>Mute Notifications</DropdownMenuItem>
-            <DropdownMenuItem>Block User</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Eye className="w-4 h-4 mr-2 text-muted-foreground" />
+              View Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <BellOff className="w-4 h-4 mr-2 text-muted-foreground" />
+              Mute Notifications
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Ban className="w-4 h-4 mr-2 text-muted-foreground" />
+              Block User
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardFooter>

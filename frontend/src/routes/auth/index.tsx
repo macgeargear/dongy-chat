@@ -65,6 +65,7 @@ function RouteComponent() {
     defaultValues: {
       username: "",
       password: "",
+      displayName: "",
     },
   });
 
@@ -78,7 +79,7 @@ function RouteComponent() {
 
   const handleSignup = async (values: z.infer<typeof signupFormSchema>) => {
     try {
-      await signup(values.username, values.password, values.displayName);
+      await signup({ ...values });
     } catch (err: any) {
       signupForm.setError("root", {
         message: err.message || "An error occurred",
@@ -88,7 +89,7 @@ function RouteComponent() {
 
   const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
     try {
-      await login(values.username, values.password);
+      await login({ ...values });
     } catch (err: any) {
       loginForm.setError("root", {
         message: err.message || "An error occurred",
