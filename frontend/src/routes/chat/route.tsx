@@ -13,10 +13,10 @@ function RouteComponent() {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen overflow-hidden w-full">
         <ChatSidebar />
         <main className="flex-1 flex flex-col bg-background">
-          <header className="border-b px-4 py-3 flex items-center justify-between">
+          <header className="border-b px-4 py-3 flex items-center gap-2">
             <SidebarTrigger />
             <h1 className="text-lg font-semibold">💬 Chat App</h1>
           </header>
