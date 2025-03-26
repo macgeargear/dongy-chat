@@ -21,6 +21,13 @@ const authRoutes: FastifyPluginAsync = async (app) => {
       data: { username, password: hashed, displayName },
     });
 
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        imageUrl: `https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${user.id}`,
+      },
+    });
+
     const token = app.jwt.sign({
       id: user.id,
       username: user.username,
