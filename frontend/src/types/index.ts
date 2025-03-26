@@ -14,6 +14,7 @@ export interface User {
   username: string;
   password: string;
   displayName: string;
+  imageUrl: string;
   channelMembers: ChannelMember[];
   messages: Message[];
 }
