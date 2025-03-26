@@ -55,7 +55,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsUpdateOpen(true)}
+                onClick={onEdit}
                 className="p-1 text-muted-foreground hover:text-foreground"
               >
                 <EditIcon className="h-4 w-4" />
