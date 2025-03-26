@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useUsers } from "@/hooks/user/use-users";
-import { mockUsers } from "@/lib/mocks";
+
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -42,7 +42,7 @@ export default function CreateChannelDialog({
   onSubmit,
 }: CreateChannelDialogProps) {
   const [open, setOpen] = useState(false);
-  const { data: users = mockUsers, isLoading } = useUsers();
+  const { data: users, isLoading } = useUsers();
 
   const form = useForm({
     defaultValues: {
