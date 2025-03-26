@@ -60,6 +60,7 @@ const authRoutes: FastifyPluginAsync = async (app) => {
       return reply.send({
         id: user.id,
         username: user.username,
+        displayName: user.displayName,
       });
     } catch {
       return reply.status(401).send({ error: "Unauthorized" });
