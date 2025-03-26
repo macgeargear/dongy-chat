@@ -43,10 +43,7 @@ export function UserCard({
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="h-14 w-14 ring-2 ring-offset-2 ring-offset-background ring-primary/50">
-              <AvatarImage
-                src={`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${encodeURIComponent(user.displayName)}`}
-                alt={user.displayName}
-              />
+              <AvatarImage src={user.imageUrl} alt={user.displayName} />
               <AvatarFallback className="bg-muted text-muted-foreground font-medium">
                 {user.displayName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
