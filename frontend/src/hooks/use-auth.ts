@@ -10,14 +10,22 @@ export function useAuth() {
 
   async function login(username: string, password: string) {
     const res = await api.post("/api/auth/login", { username, password });
+    console.log("Login successful...");
     localStorage.setItem("token", res.data.token);
     await fetchMe();
   }
 
-  async function signup(username: string, password: string) {
-    const res = await api.post("/api/auth/signup", { username, password });
+  async function signup(
+    username: string,
+    password: string,
+    displayName: string,
+  ) {
+    const res = await api.post("/api/auth/signup", {
+      username,
+      password,
+      displayName,
+    });
     localStorage.setItem("token", res.data.token);
-    await fetchMe();
   }
 
   async function fetchMe() {
