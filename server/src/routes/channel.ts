@@ -54,7 +54,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     }
     if (userIds.length > 2 && isPrivate) {
       return reply
-        .status(500)
+        .status(400)
         .send({ error: "Private chat cannot exceed 2 members" });
     }
     try {
