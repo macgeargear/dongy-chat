@@ -1,4 +1,3 @@
-// chat-sidebar.tsx
 import {
   Sidebar,
   SidebarContent,
