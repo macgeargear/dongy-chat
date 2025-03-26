@@ -19,7 +19,6 @@ interface ChannelCardProps {
 }
 
 export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteChannel = useDeleteChannel();
 
