@@ -11,7 +11,6 @@ import {
   type UpdateChannelInput,
 } from "@/components/channels/update-channel-dialog";
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
