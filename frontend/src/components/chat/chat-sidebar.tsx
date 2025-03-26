@@ -32,7 +32,7 @@ import { mockChannels, mockInbox } from "@/lib/mocks";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
-  { title: "All users", to: "/chat", icon: InboxIcon },
+  { title: "All users", to: "/chat/users", icon: InboxIcon },
   { title: "All Channels", to: "/chat/channel", icon: GroupIcon },
   { title: "Settings", to: "/chat/settings", icon: SettingsIcon },
 ];
