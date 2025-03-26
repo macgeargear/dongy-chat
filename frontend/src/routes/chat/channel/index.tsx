@@ -6,6 +6,12 @@ import CreateChannelDialog, {
 import { useChannels } from "@/hooks/channel/use-channels";
 import { useCreateChannel } from "@/hooks/channel/use-create-channel";
 import { ChannelCard } from "@/components/channels/channel-card";
+import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
+import {
+  UpdateChannelDialog,
+  type UpdateChannelInput,
+} from "@/components/channels/update-channel-dialog";
+import { useState } from "react";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
@@ -16,10 +22,19 @@ function RouteComponent() {
     includeMembers: true,
     includeMessages: true,
   });
+
+  const [selectedChannel, setSelectedChannel] =
+    useState<UpdateChannelInput | null>(null);
+
   const createChannel = useCreateChannel();
+  const updateChannel = useUpdateChannel();
 
   const handleCreateChannel = (data: CreateChannelInput) => {
     createChannel.mutate(data);
+  };
+
+  const handleUpdateChannel = (data: UpdateChannelInput) => {
+    updateChannel.mutate(data);
   };
 
   if (isLoading) {
@@ -44,10 +59,28 @@ function RouteComponent() {
             to="/chat/channel"
             className="hover:no-underline"
           >
-            <ChannelCard channel={channel} />
+            <ChannelCard
+              channel={channel}
+              onEdit={() =>
+                setSelectedChannel({
+                  id: channel.id,
+                  name: channel.name,
+                  theme: channel.theme,
+                })
+              }
+            />
           </Link>
         ))}
       </div>
+
+      {selectedChannel && (
+        <UpdateChannelDialog
+          isOpen={!!selectedChannel}
+          onClose={() => setSelectedChannel(null)}
+          channel={selectedChannel}
+          handleUpdateChannel={handleUpdateChannel}
+        />
+      )}
     </div>
   );
 }

@@ -26,7 +26,7 @@ import { Loader2Icon } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(3, "Channel name must be at least 3 characters long"),
-  isPrivate: z.boolean().default(false),
+  isPrivate: z.boolean(),
   userIds: z
     .array(z.string().uuid())
     .min(1, "At least one user must be selected"),
@@ -51,11 +51,8 @@ export default function CreateChannelDialog({
       userIds: [] as string[],
     },
     validators: {
-      onChange: (value) => {
-        console.log("Form value changed:", value.value);
-      },
+      onSubmit: schema,
     },
-
     onSubmit: async ({ value }) => {
       onSubmit(value);
       setOpen(false);
