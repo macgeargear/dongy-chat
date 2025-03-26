@@ -4,6 +4,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
@@ -23,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import clsx from "clsx";
 
 interface UserCardProps {
   user: User;
@@ -35,48 +37,78 @@ export function UserCard({
   onDirectMessage,
   onGroupChat,
 }: UserCardProps) {
-  const statusColor = statusColors["online"]; // You could make this dynamic
+  const statusColor = statusColors["online"];
 
   return (
-    <Card className="transition-shadow duration-200 border border-border/60 hover:shadow-md rounded-xl overflow-hidden">
-      <CardContent className="p-5">
+    <Card className="transition-shadow duration-200 border border-border/60 hover:shadow-lg rounded-xl overflow-hidden bg-background/80 backdrop-blur">
+      <CardContent className="p-5 pb-3">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Avatar className="h-14 w-14 ring-2 ring-offset-2 ring-offset-background ring-primary/50">
+            <Avatar className="h-16 w-16 border border-border shadow-sm">
               <AvatarImage src={user.imageUrl} alt={user.displayName} />
-              <AvatarFallback className="bg-muted text-muted-foreground font-medium">
-                {user.displayName.slice(0, 2).toUpperCase()}
+              <AvatarFallback className="bg-muted text-muted-foreground font-semibold text-lg rounded-full">
+                {user.displayName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <span
-              className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${statusColor}`}
+              className={clsx(
+                "absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-background",
+                statusColor,
+              )}
               aria-hidden="true"
             />
           </div>
 
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold text-foreground truncate">
               {user.displayName}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground truncate">
               {getStatusText("online")}
             </p>
           </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full hover:bg-accent/50"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem>
+                <Eye className="w-4 h-4 mr-2 text-muted-foreground" />
+                View Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <BellOff className="w-4 h-4 mr-2 text-muted-foreground" />
+                Mute Notifications
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Ban className="w-4 h-4 mr-2 text-red-500" />
+                Block User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between p-3 bg-muted/30 border-t border-border/30">
-        <div className="flex gap-2">
-          <TooltipProvider>
+      <CardFooter className="flex items-center h-fit justify-between p-4 pt-2 bg-muted/20 border-t border-border/30">
+        <TooltipProvider>
+          <div className="flex gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="text-primary flex items-center gap-1"
                   onClick={() => onDirectMessage?.(user.id)}
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-4 w-4 mr-1" />
                   DM
                 </Button>
               </TooltipTrigger>
@@ -88,44 +120,16 @@ export function UserCard({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="bg-background hover:bg-muted"
                   onClick={() => onGroupChat?.(user.id)}
                 >
-                  <UsersIcon className="h-4 w-4" />
+                  <UsersIcon className="h-4 w-4 mr-1" />
                   Group
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Add to group chat</TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full hover:bg-muted"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More options</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>
-              <Eye className="w-4 h-4 mr-2 text-muted-foreground" />
-              View Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <BellOff className="w-4 h-4 mr-2 text-muted-foreground" />
-              Mute Notifications
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Ban className="w-4 h-4 mr-2 text-muted-foreground" />
-              Block User
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </div>
+        </TooltipProvider>
       </CardFooter>
     </Card>
   );

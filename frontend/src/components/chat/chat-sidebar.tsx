@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { Link } from "@tanstack/react-router";
+import { Link, redirect } from "@tanstack/react-router";
 import { mockChannels, mockInbox } from "@/lib/mocks";
 
 const items = [
