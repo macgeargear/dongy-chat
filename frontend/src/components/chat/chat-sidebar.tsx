@@ -16,7 +16,7 @@ import {
   GroupIcon,
   HomeIcon,
   InboxIcon,
-  MessageCircleIcon,
+  Loader2Icon,
   SettingsIcon,
   User2Icon,
 } from "lucide-react";
@@ -28,16 +28,26 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
-import { mockChannels, mockInbox } from "@/lib/mocks";
+import { useChannels } from "@/hooks/channel/use-channels";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
-  { title: "All users", to: "/chat", icon: InboxIcon },
+  { title: "All users", to: "/chat/users", icon: InboxIcon },
   { title: "All Channels", to: "/chat/channel", icon: GroupIcon },
   { title: "Settings", to: "/chat/settings", icon: SettingsIcon },
 ];
 
 export function ChatSidebar() {
+  const { data: channels, isLoading } = useChannels();
+
+  if (isLoading) {
+    return (
+      <div className="h-fit flex justify-center items-center">
+        <Loader2Icon className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <Sidebar>
       <SidebarHeader />
@@ -64,7 +74,7 @@ export function ChatSidebar() {
           <SidebarGroupLabel>Channels</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mockChannels.map((channel) => (
+              {channels?.map((channel) => (
                 <SidebarMenuSubItem key={channel.name}>
                   <SidebarMenuButton asChild>
                     <Link to={`/chat`}>
@@ -81,18 +91,7 @@ export function ChatSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Inbox</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {mockInbox.map((inbox) => (
-                <SidebarMenuSubItem key={inbox.username}>
-                  <SidebarMenuButton asChild>
-                    <Link to={`/chat`}>
-                      <MessageCircleIcon className="h-4 w-4" />
-                      <span>{inbox.username}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuSubItem>
-              ))}
-            </SidebarMenu>
+            <SidebarMenu>{/* Add Inbox items */}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

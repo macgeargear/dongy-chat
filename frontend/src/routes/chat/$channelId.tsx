@@ -313,27 +313,7 @@ function ChannelRoomPage() {
             </Button>
           </div>
 
-          {user?.role === "admin" && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() =>
-                      announce(`📢 Admin Broadcast from ${user.username}`)
-                    }
-                    variant="destructive"
-                    className="ml-4"
-                  >
-                    <PinIcon className="h-4 w-4 mr-2" />
-                    Broadcast to all
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Send a broadcast to all rooms</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+         
         </CardFooter>
       </Card>
     </div>

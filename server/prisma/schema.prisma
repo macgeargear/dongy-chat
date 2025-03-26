@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,6 +15,7 @@ model User {
   password       String
   username       String          @unique
   displayName    String          @default("Unknown")
+  imageUrl       String          @default("https://api.dicebear.com/9.x/notionists-neutral/svg")
   channelMembers ChannelMember[]
   messages       Message[]
 }

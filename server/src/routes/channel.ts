@@ -14,7 +14,12 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
   // Get all channels
   app.get("/", { preHandler: requireAuth }, async (_, reply) => {
     try {
-      const allChannels = await prisma.channel.findMany();
+      const allChannels = await prisma.channel.findMany({
+        include: {
+          channelMembers: true,
+          messages: true,
+        },
+      });
       return reply.status(200).send(allChannels);
     } catch (error) {
       return reply.status(500).send({ error: "Failed to retrieve channels." });
@@ -54,7 +59,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     }
     if (userIds.length > 2 && isPrivate) {
       return reply
-        .status(500)
+        .status(400)
         .send({ error: "Private chat cannot exceed 2 members" });
     }
     try {

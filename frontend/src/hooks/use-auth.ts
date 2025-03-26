@@ -1,37 +1,59 @@
-import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
+import type { User } from "@/types";
+
+export async function fetchMe(): Promise<User> {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No token");
+  const res = await api.get("/api/auth/me");
+  return res.data;
+}
 
 export function useAuth() {
-  const [user, setUser] = useState<{
-    id: string;
-    username: string;
-    role: string;
-  } | null>(null);
+  const queryClient = useQueryClient();
 
-  async function login(username: string, password: string) {
-    const res = await api.post("/api/auth/login", { username, password });
-    localStorage.setItem("token", res.data.token);
-    await fetchMe();
-  }
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["me"],
+    queryFn: fetchMe,
+    enabled: !!localStorage.getItem("token"),
+    retry: false,
+  });
 
-  async function signup(username: string, password: string) {
-    const res = await api.post("/api/auth/signup", { username, password });
-    localStorage.setItem("token", res.data.token);
-    await fetchMe();
-  }
+  const login = useMutation({
+    mutationFn: async (data: { username: string; password: string }) => {
+      const res = await api.post("/api/auth/login", data);
+      localStorage.setItem("token", res.data.token);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
 
-  async function fetchMe() {
-    try {
-      const res = await api.get("/api/auth/me");
-      setUser(res.data);
-    } catch {
-      setUser(null);
-    }
-  }
+  const signup = useMutation({
+    mutationFn: async (data: {
+      username: string;
+      password: string;
+      displayName: string;
+    }) => {
+      const res = await api.post("/api/auth/signup", data);
+      localStorage.setItem("token", res.data.token);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
 
-  useEffect(() => {
-    fetchMe();
-  }, []);
-
-  return { user, login, signup };
+  return {
+    user,
+    isLoading,
+    isError,
+    login: login.mutateAsync,
+    signup: signup.mutateAsync,
+  };
 }

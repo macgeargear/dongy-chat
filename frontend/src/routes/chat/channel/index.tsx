@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader2Icon } from "lucide-react";
 import CreateChannelDialog, {
   type CreateChannelInput,
 } from "@/components/channels/create-channel-dialog";
-import { useChannels } from "@/hooks/channel/use-channels";
+import { getChannels } from "@/hooks/channel/use-channels";
 import { useCreateChannel } from "@/hooks/channel/use-create-channel";
 import { ChannelCard } from "@/components/channels/channel-card";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
@@ -15,13 +14,16 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
+  loader: async () => ({
+    channels: await getChannels({
+      includeMembers: true,
+      includeMessages: true,
+    }),
+  }),
 });
 
 function RouteComponent() {
-  const { data: channels, isLoading } = useChannels({
-    includeMembers: true,
-    includeMessages: true,
-  });
+  const { channels } = Route.useLoaderData();
 
   const [selectedChannel, setSelectedChannel] =
     useState<UpdateChannelInput | null>(null);
@@ -36,14 +38,6 @@ function RouteComponent() {
   const handleUpdateChannel = (data: UpdateChannelInput) => {
     updateChannel.mutate(data);
   };
-
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2Icon className="animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

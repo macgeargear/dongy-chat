@@ -30,13 +30,24 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LockIcon } from "lucide-react";
 
-// Form schema
-const formSchema = z.object({
+const signupFormSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   password: z.string().min(4, {
-    message: "Password must be at least 6 characters.",
+    message: "Password must be at least 4 characters.",
+  }),
+  displayName: z.string().min(2, {
+    message: "Display name must be at least 2 characters.",
+  }),
+});
+
+const loginFormSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(4, {
+    message: "Password must be at least 4 characters.",
   }),
 });
 
@@ -49,20 +60,38 @@ function RouteComponent() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const signupForm = useForm<z.infer<typeof signupFormSchema>>({
+    resolver: zodResolver(signupFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      displayName: "",
+    },
+  });
+
+  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSignup = async (values: z.infer<typeof signupFormSchema>) => {
     try {
-      if (mode === "login") await login(values.username, values.password);
-      else await signup(values.username, values.password);
+      await signup({ ...values });
     } catch (err: any) {
-      form.setError("root", {
+      signupForm.setError("root", {
+        message: err.message || "An error occurred",
+      });
+    }
+  };
+
+  const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
+    try {
+      await login({ ...values });
+    } catch (err: any) {
+      loginForm.setError("root", {
         message: err.message || "An error occurred",
       });
     }
@@ -98,13 +127,13 @@ function RouteComponent() {
               </TabsList>
 
               <TabsContent value="login">
-                <Form {...form}>
+                <Form {...loginForm}>
                   <form
-                    onSubmit={form.handleSubmit(handleSubmit)}
+                    onSubmit={loginForm.handleSubmit(handleLogin)}
                     className="space-y-4"
                   >
                     <FormField
-                      control={form.control}
+                      control={loginForm.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
@@ -120,7 +149,7 @@ function RouteComponent() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={loginForm.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
@@ -136,12 +165,16 @@ function RouteComponent() {
                         </FormItem>
                       )}
                     />
-                    {form.formState.errors.root && (
+                    {loginForm.formState.errors.root && (
                       <div className="text-sm font-medium text-destructive">
-                        {form.formState.errors.root.message}
+                        {loginForm.formState.errors.root.message}
                       </div>
                     )}
-                    <Button type="submit" className="w-full">
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      onClick={() => navigate({ to: "/chat" })}
+                    >
                       Login
                     </Button>
                   </form>
@@ -149,13 +182,13 @@ function RouteComponent() {
               </TabsContent>
 
               <TabsContent value="signup">
-                <Form {...form}>
+                <Form {...signupForm}>
                   <form
-                    onSubmit={form.handleSubmit(handleSubmit)}
+                    onSubmit={signupForm.handleSubmit(handleSignup)}
                     className="space-y-4"
                   >
                     <FormField
-                      control={form.control}
+                      control={signupForm.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
@@ -168,7 +201,7 @@ function RouteComponent() {
                       )}
                     />
                     <FormField
-                      control={form.control}
+                      control={signupForm.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
@@ -184,16 +217,30 @@ function RouteComponent() {
                         </FormItem>
                       )}
                     />
-                    {form.formState.errors.root && (
+                    <FormField
+                      control={signupForm.control}
+                      name="displayName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="Display Name"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {signupForm.formState.errors.root && (
                       <div className="text-sm font-medium text-destructive">
-                        {form.formState.errors.root.message}
+                        {signupForm.formState.errors.root.message}
                       </div>
                     )}
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      onClick={() => navigate({ to: "/chat" })}
-                    >
+                    <Button type="submit" className="w-full">
                       Create account
                     </Button>
                   </form>
