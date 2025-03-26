@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = Fastify();
 
-app.register(cors, { origin: true });
+app.register(cors, { origin: true, methods: ["GET", "POST", "PUT", "DELETE"] });
 app.register(jwt, { secret: process.env.JWT_SECRET! });
 app.register(fastifyIO);
 
