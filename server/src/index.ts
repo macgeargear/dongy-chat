@@ -31,7 +31,7 @@ app.register(channelMemberRoutes, { prefix: "/api/channel-member" });
 const start = async () => {
   try {
     await app.listen({ port: 3006, host: "0.0.0.0" });
-    console.log(`Server listening on ${app.server.address()}`);
+    console.log(`Server listening on ${app.addresses()}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);

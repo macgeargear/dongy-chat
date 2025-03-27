@@ -23,6 +23,13 @@ import {
   CommandItem,
 } from "../ui/command";
 import { Loader2Icon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  useQueryClient,
+  type QueryObserverResult,
+  type RefetchOptions,
+} from "@tanstack/react-query";
+import type { Channel } from "@/types";
 
 const schema = z.object({
   name: z.string().min(3, "Channel name must be at least 3 characters long"),
@@ -44,6 +51,8 @@ export default function CreateChannelDialog({
   const [open, setOpen] = useState(false);
   const { data: users, isLoading } = useUsers();
 
+  const queryClient = useQueryClient();
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -55,6 +64,7 @@ export default function CreateChannelDialog({
     },
     onSubmit: async ({ value }) => {
       onSubmit(value);
+      queryClient.invalidateQueries({ queryKey: ["channels"] });
       setOpen(false);
     },
   });
@@ -125,19 +135,27 @@ export default function CreateChannelDialog({
                       <Button
                         variant="outline"
                         role="combobox"
-                        className="w-full justify-between truncate"
+                        className="w-full justify-between truncate h-fit"
                       >
                         {field.state.value.length > 0 ? (
                           <div className="flex gap-2 flex-wrap max-w-[90%] truncate">
                             {users
                               ?.filter((u) => field.state.value.includes(u.id))
                               .map((u) => (
-                                <span
+                                <div
                                   key={u.id}
-                                  className="text-xs bg-muted px-2 py-0.5 rounded-md"
+                                  className="flex items-center text-xs bg-muted px-2 py-0.5 rounded-md"
                                 >
-                                  {u.displayName}
-                                </span>
+                                  <div className="flex items-center gap-2">
+                                    <Avatar className="border border-border shadow-xs">
+                                      <AvatarImage src={u.imageUrl} />
+                                      <AvatarFallback>
+                                        {u.displayName[0]}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <p>{u.displayName}</p>
+                                  </div>
+                                </div>
                               ))}
                           </div>
                         ) : (
@@ -172,7 +190,13 @@ export default function CreateChannelDialog({
                               >
                                 <div className="flex items-center gap-2">
                                   <Checkbox checked={isChecked} className="" />
-                                  <span>{user.displayName}</span>
+                                  <Avatar className="border border-border shadow-xs">
+                                    <AvatarImage src={user.imageUrl} />
+                                    <AvatarFallback>
+                                      {user.displayName[0]}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <p>{user.displayName}</p>
                                 </div>
                               </CommandItem>
                             );

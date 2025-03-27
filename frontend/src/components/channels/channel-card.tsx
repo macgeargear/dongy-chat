@@ -36,20 +36,27 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               <CardTitle className="text-base font-medium line-clamp-1">
                 {channel.name}
               </CardTitle>
-              <Badge
-                variant={channel.isPrivate ? "secondary" : "default"}
-                className="text-xs font-normal"
-              >
-                {channel.isPrivate ? (
-                  <span className="flex items-center gap-1">
-                    <LockIcon className="h-3 w-3" />
-                    Private
-                  </span>
-                ) : (
-                  "Public"
-                )}
-              </Badge>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge
+                  variant={channel.isPrivate ? "secondary" : "default"}
+                  className="text-xs font-normal"
+                >
+                  {channel.isPrivate ? (
+                    <span className="flex items-center gap-1">
+                      <LockIcon className="h-3 w-3" />
+                      Private
+                    </span>
+                  ) : (
+                    "Public"
+                  )}
+                </Badge>
+                <Badge className="text-xs font-normal flex items-center gap-1">
+                  🎨 {channel.theme}
+                </Badge>
+              </div>
             </div>
+
             <div className="flex gap-1">
               <Button
                 variant="ghost"
@@ -67,7 +74,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               >
                 <TrashIcon className="h-4 w-4" />
               </Button>
-            </div>{" "}
+            </div>
           </div>
         </CardHeader>
 
@@ -81,6 +88,13 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
             {channel?.messages?.length} messages
           </div>
         </CardContent>
+
+        <DeleteChannelDialog
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onConfirm={handleDelete}
+          channelName={channel.name}
+        />
       </Card>
       <DeleteChannelDialog
         isOpen={isDeleteOpen}
