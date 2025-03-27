@@ -49,6 +49,7 @@ export function UpdateChannelDialog({
       setIsSubmitting(true);
       handleUpdateChannel(value);
       setIsSubmitting(false);
+      form.reset();
       onClose();
     },
   });

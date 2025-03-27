@@ -24,12 +24,7 @@ import {
 } from "../ui/command";
 import { Loader2Icon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import {
-  useQueryClient,
-  type QueryObserverResult,
-  type RefetchOptions,
-} from "@tanstack/react-query";
-import type { Channel } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   name: z.string().min(3, "Channel name must be at least 3 characters long"),
@@ -66,6 +61,7 @@ export default function CreateChannelDialog({
       onSubmit(value);
       queryClient.invalidateQueries({ queryKey: ["channels"] });
       setOpen(false);
+      form.reset();
     },
   });
 

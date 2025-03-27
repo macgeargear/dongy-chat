@@ -12,6 +12,7 @@ import type { Channel } from "@/types";
 import { useState } from "react";
 import { useDeleteChannel } from "@/hooks/channel/use-delete-channel";
 import { DeleteChannelDialog } from "./delete-channel-dialog";
+import toast from "react-hot-toast";
 
 interface ChannelCardProps {
   channel: Channel;
@@ -24,6 +25,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
 
   const handleDelete = async () => {
     await deleteChannel.mutateAsync(channel.id);
+    toast.success("Channel deleted successfully");
     setIsDeleteOpen(false);
   };
 
@@ -69,7 +71,9 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDeleteOpen(true)}
+                onClick={() => {
+                  setIsDeleteOpen(true);
+                }}
                 className="p-1 text-red-500 hover:bg-red-100"
               >
                 <TrashIcon className="h-4 w-4" />

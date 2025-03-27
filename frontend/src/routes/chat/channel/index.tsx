@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import CreateChannelDialog, {
   type CreateChannelInput,
 } from "@/components/channels/create-channel-dialog";
-import { getChannels, useChannels } from "@/hooks/channel/use-channels";
+import { useChannels } from "@/hooks/channel/use-channels";
 import { useCreateChannel } from "@/hooks/channel/use-create-channel";
 import { ChannelCard } from "@/components/channels/channel-card";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
@@ -13,17 +13,14 @@ import {
 import { useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import type { Channel } from "@/types";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const {
-    data: channels,
-    refetch: refetchChannels,
-    isLoading,
-  } = useChannels({
+  const { data: channels, isLoading } = useChannels({
     includeMembers: true,
     includeMessages: true,
   });
@@ -32,20 +29,14 @@ function RouteComponent() {
   const createChannel = useCreateChannel();
   const updateChannel = useUpdateChannel();
 
-  const handleCreateChannel = (data: CreateChannelInput) => {
-    createChannel.mutate(data, {
-      onSuccess: () => {
-        refetchChannels();
-      },
-    });
+  const handleCreateChannel = async (data: CreateChannelInput) => {
+    await createChannel.mutateAsync(data);
+    toast.success("Channel created successfully!");
   };
 
-  const handleUpdateChannel = (data: UpdateChannelInput) => {
-    updateChannel.mutate(data, {
-      onSuccess: () => {
-        refetchChannels();
-      },
-    });
+  const handleUpdateChannel = async (data: UpdateChannelInput) => {
+    await updateChannel.mutateAsync(data);
+    toast.success("Channel updated successfully");
   };
 
   return (
