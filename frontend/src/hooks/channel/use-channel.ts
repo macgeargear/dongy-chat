@@ -22,11 +22,11 @@ export async function getChannel({
 }
 
 export function useChannel({
-  id,
+  channelId,
   includeMembers = false,
   includeMessages = false,
 }: {
-  id: string;
+  channelId: string;
   includeMembers?: boolean;
   includeMessages?: boolean;
 }) {
@@ -34,7 +34,7 @@ export function useChannel({
     queryKey: ["channels", includeMembers, includeMessages],
     queryFn: () =>
       getChannel({
-        id,
+        id: channelId,
         includeMembers,
         includeMessages,
       }),

@@ -222,7 +222,7 @@ function RouteComponent() {
                       name="displayName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>Display Name</FormLabel>
                           <FormControl>
                             <Input
                               type="text"

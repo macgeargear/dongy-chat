@@ -17,9 +17,13 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
       const allChannels = await prisma.channel.findMany({
         include: {
           messages: true,
+          channelMembers: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
-      console.log("allChannels: ", allChannels);
       return reply.status(200).send(allChannels);
     } catch (error) {
       return reply.status(500).send({ error: "Failed to retrieve channels." });

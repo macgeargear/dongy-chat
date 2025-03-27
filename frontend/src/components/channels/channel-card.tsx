@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
   EditIcon,
+  Loader2Icon,
   LockIcon,
   MessageCircleIcon,
   TrashIcon,
+  UserPlusIcon,
   UsersIcon,
 } from "lucide-react";
 import type { Channel } from "@/types";
@@ -13,6 +15,19 @@ import { useState } from "react";
 import { useDeleteChannel } from "@/hooks/channel/use-delete-channel";
 import { DeleteChannelDialog } from "./delete-channel-dialog";
 import toast from "react-hot-toast";
+import { useChannel } from "@/hooks/channel/use-channel";
+import { useAddUserChannel } from "@/hooks/channel/use-add-user-channel";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "../ui/command";
+import { Checkbox } from "../ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useUsers } from "@/hooks/user/use-users";
 
 interface ChannelCardProps {
   channel: Channel;
@@ -20,13 +35,32 @@ interface ChannelCardProps {
 }
 
 export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
+  console.log({ channel });
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteChannel = useDeleteChannel();
+
+  const { data: allUsers } = useUsers();
+
+  const addUserChannel = useAddUserChannel();
 
   const handleDelete = async () => {
     await deleteChannel.mutateAsync(channel.id);
     toast.success("Channel deleted successfully");
     setIsDeleteOpen(false);
+  };
+
+  const handleAddUserChannel = async (userId: string) => {
+    toast.promise(
+      addUserChannel.mutateAsync({
+        channelId: channel.id,
+        userId,
+      }),
+      {
+        loading: "Adding user to channel...",
+        success: "User added to channel successfully",
+        error: "Failed to add user to channel",
+      },
+    );
   };
 
   return (
@@ -53,9 +87,6 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
                     "Public"
                   )}
                 </Badge>
-                <Badge className="text-xs font-normal flex items-center gap-1">
-                  🎨 {channel.theme}
-                </Badge>
               </div>
             </div>
 
@@ -68,6 +99,58 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               >
                 <EditIcon className="h-4 w-4" />
               </Button>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <UserPlusIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search users..." />
+                    <CommandEmpty>No users found.</CommandEmpty>
+                    <CommandGroup className="max-h-64 overflow-auto">
+                      {allUsers
+                        ?.filter(
+                          (user) =>
+                            !channel.channelMembers
+                              .map((member) => member.userId)
+                              .includes(user.id),
+                        )
+                        .map((user) => {
+                          return (
+                            <CommandItem
+                              key={user.id}
+                              onSelect={() => handleAddUserChannel(user.id)}
+                              className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-muted transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Avatar className="border border-border shadow-sm w-8 h-8">
+                                  <AvatarImage src={user.imageUrl} />
+                                  <AvatarFallback>
+                                    {user.displayName?.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <p className="text-sm font-medium text-foreground">
+                                  {user.displayName}
+                                </p>
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                Select
+                              </span>
+                            </CommandItem>
+                          );
+                        })}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
               <Button
                 variant="ghost"
                 size="sm"

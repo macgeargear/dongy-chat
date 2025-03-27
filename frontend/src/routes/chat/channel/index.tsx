@@ -11,9 +11,9 @@ import {
   type UpdateChannelInput,
 } from "@/components/channels/update-channel-dialog";
 import { useState } from "react";
-import { Loader2Icon } from "lucide-react";
 import type { Channel } from "@/types";
 import toast from "react-hot-toast";
+import { ChannelCardSkeleton } from "@/components/channels/channel-card-skeleton";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
@@ -30,13 +30,19 @@ function RouteComponent() {
   const updateChannel = useUpdateChannel();
 
   const handleCreateChannel = async (data: CreateChannelInput) => {
-    await createChannel.mutateAsync(data);
-    toast.success("Channel created successfully!");
+    toast.promise(createChannel.mutateAsync(data), {
+      loading: "Creating channel...",
+      success: "Channel created successfully!",
+      error: "Failed to create channel",
+    });
   };
 
   const handleUpdateChannel = async (data: UpdateChannelInput) => {
-    await updateChannel.mutateAsync(data);
-    toast.success("Channel updated successfully");
+    toast.promise(updateChannel.mutateAsync(data), {
+      loading: "Updating channel...",
+      success: "Channel updated successfully!",
+      error: "Failed to update channel",
+    });
   };
 
   return (
@@ -47,7 +53,12 @@ function RouteComponent() {
       </div>
 
       {isLoading ? (
-        <Loader2Icon className="animate-spin" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ChannelCardSkeleton />
+          <ChannelCardSkeleton />
+          <ChannelCardSkeleton />
+          <ChannelCardSkeleton />
+        </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {channels?.map((channel) => (
@@ -58,9 +69,7 @@ function RouteComponent() {
             >
               <ChannelCard
                 channel={channel}
-                onEdit={() => {
-                  setSelectedChannel(channel);
-                }}
+                onEdit={() => setSelectedChannel(channel)}
               />
             </Link>
           ))}
