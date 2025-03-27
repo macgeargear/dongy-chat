@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
   EditIcon,
-  Loader2Icon,
   LockIcon,
   MessageCircleIcon,
   TrashIcon,
@@ -15,7 +14,6 @@ import { useState } from "react";
 import { useDeleteChannel } from "@/hooks/channel/use-delete-channel";
 import { DeleteChannelDialog } from "./delete-channel-dialog";
 import toast from "react-hot-toast";
-import { useChannel } from "@/hooks/channel/use-channel";
 import { useAddUserChannel } from "@/hooks/channel/use-add-user-channel";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -25,7 +23,6 @@ import {
   CommandInput,
   CommandItem,
 } from "../ui/command";
-import { Checkbox } from "../ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUsers } from "@/hooks/user/use-users";
 
