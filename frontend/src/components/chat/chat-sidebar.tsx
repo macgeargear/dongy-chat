@@ -16,7 +16,6 @@ import {
   GroupIcon,
   HomeIcon,
   InboxIcon,
-  Loader2Icon,
   SettingsIcon,
   User2Icon,
 } from "lucide-react";
@@ -28,7 +27,6 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
-import { useChannels } from "@/hooks/channel/use-channels";
 import type { Channel } from "@/types";
 
 const items = [
