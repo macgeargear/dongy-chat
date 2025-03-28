@@ -90,6 +90,7 @@ function RouteComponent() {
   const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
     try {
       await login({ ...values });
+      navigate({ to: "/chat" });
     } catch (err: any) {
       loginForm.setError("root", {
         message: err.message || "An error occurred",
@@ -170,11 +171,7 @@ function RouteComponent() {
                         {loginForm.formState.errors.root.message}
                       </div>
                     )}
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      onClick={() => navigate({ to: "/chat" })}
-                    >
+                    <Button type="submit" className="w-full">
                       Login
                     </Button>
                   </form>
