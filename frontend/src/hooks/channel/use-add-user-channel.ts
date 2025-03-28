@@ -1,6 +1,5 @@
 import api from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 
 export function useAddUserChannel() {
   const queryClient = useQueryClient();
