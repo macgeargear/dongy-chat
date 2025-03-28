@@ -1,16 +1,24 @@
 import { UserCard } from "@/components/user/user-card";
-import { getUsers } from "@/hooks/user/use-users";
+import { UserCardSkeleton } from "@/components/user/user-card-skeleton";
+import { useUsers } from "@/hooks/user/use-users";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/chat/users/")({
   component: RouteComponent,
-  loader: async () => ({
-    users: await getUsers(),
-  }),
 });
 
 function RouteComponent() {
-  const { users } = Route.useLoaderData();
+  const { data: users, isLoading } = useUsers();
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, index) => (
+          <UserCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background py-10">
@@ -20,16 +28,24 @@ function RouteComponent() {
           Select a contact to message
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {users.map((user) => (
-            <UserCard
-              key={user.id}
-              user={user}
-              onDirectMessage={() => {}}
-              onGroupChat={() => {}}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, index) => (
+              <UserCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {users?.map((user) => (
+              <UserCard
+                key={user.id}
+                user={user}
+                onDirectMessage={() => {}}
+                onGroupChat={() => {}}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -16,7 +16,6 @@ import {
   GroupIcon,
   HomeIcon,
   InboxIcon,
-  Loader2Icon,
   SettingsIcon,
   User2Icon,
 } from "lucide-react";
@@ -28,7 +27,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Link } from "@tanstack/react-router";
-import { useChannels } from "@/hooks/channel/use-channels";
+import type { Channel } from "@/types";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
@@ -37,17 +36,11 @@ const items = [
   { title: "Settings", to: "/chat/settings", icon: SettingsIcon },
 ];
 
-export function ChatSidebar() {
-  const { data: channels, isLoading } = useChannels();
+interface ChatSidebarProps {
+  channels: Channel[];
+}
 
-  if (isLoading) {
-    return (
-      <div className="h-fit flex justify-center items-center">
-        <Loader2Icon className="animate-spin" />
-      </div>
-    );
-  }
-
+export function ChatSidebar({ channels }: ChatSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader />
