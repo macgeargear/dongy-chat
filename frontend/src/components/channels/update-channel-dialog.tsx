@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import type { Channel } from "@/types";
 
 const updateChannelSchema = z.object({
   id: z.string().uuid("Invalid channel ID"),
@@ -24,7 +25,7 @@ interface UpdateChannelDialogProps {
   isOpen: boolean;
   onClose: () => void;
   handleUpdateChannel: (data: UpdateChannelInput) => void;
-  channel: UpdateChannelInput;
+  channel: Channel;
 }
 
 export function UpdateChannelDialog({
@@ -48,6 +49,7 @@ export function UpdateChannelDialog({
       setIsSubmitting(true);
       handleUpdateChannel(value);
       setIsSubmitting(false);
+      form.reset();
       onClose();
     },
   });
@@ -104,6 +106,8 @@ export function UpdateChannelDialog({
               </div>
             )}
           </form.Field>
+
+          {/* Channel Members */}
 
           <DialogFooter className="pt-2">
             <Button
