@@ -23,8 +23,5 @@ export function useAddUserChannel() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["channels"] });
     },
-    onError: () => {
-      toast.error("Failed to add user to channel");
-    },
   });
 }
