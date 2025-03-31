@@ -15,7 +15,7 @@ import { Route as ChatRouteImport } from './routes/chat/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ChatIndexImport } from './routes/chat/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
-import { Route as ChatChannelIdImport } from './routes/chat/$channelId'
+import { Route as ChatChannelIdImport } from './routes/chat/channel/$channelId'
 import { Route as ChatUsersIndexImport } from './routes/chat/users/index'
 import { Route as ChatChannelIndexImport } from './routes/chat/channel/index'
 

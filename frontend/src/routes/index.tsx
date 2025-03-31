@@ -26,7 +26,7 @@ function App() {
 
         {/* Buttons */}
         <div className="flex space-x-4 justify-center">
-          <Link to="/chat" className={cn(buttonVariants())}>
+          <Link to="/chat/channel" className={cn(buttonVariants())}>
             Chat
           </Link>
           <Link to="/auth" className={cn(buttonVariants())}>

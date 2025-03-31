@@ -173,7 +173,7 @@ function RouteComponent() {
                     <Button
                       type="submit"
                       className="w-full"
-                      onClick={() => navigate({ to: "/chat" })}
+                      onClick={() => navigate({ to: "/chat/channel" })}
                     >
                       Login
                     </Button>
@@ -254,7 +254,7 @@ function RouteComponent() {
                 <p className="font-medium">Welcome, {user.username}!</p>
                 <div className="mt-2">
                   <RouterLink
-                    to="/chat"
+                    to="/chat/channel"
                     className="flex items-center text-sm font-medium text-green-700 hover:text-green-900"
                   >
                     Go to Chat →
