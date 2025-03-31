@@ -1,15 +1,42 @@
-import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import type { Channel } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 
+export async function getChannel({
+  id,
+  includeMembers,
+  includeMessages,
+}: {
+  includeMembers?: boolean;
+  includeMessages?: boolean;
+  id: string;
+}) {
+  const params = new URLSearchParams();
+  if (includeMessages) params.append("messages", "true");
+  if (includeMembers) params.append("members", "true");
 
-export function useChannel(channelId: string) {
+  const res = await api.get<Channel>(`/api/channel/${id}`, {
+    params,
+  });
+  return res.data;
+}
+
+export function useChannel({
+  channelId,
+  includeMembers = false,
+  includeMessages = false,
+}: {
+  channelId: string;
+  includeMembers?: boolean;
+  includeMessages?: boolean;
+}) {
   return useQuery({
-    queryKey: ["channels", channelId],
-    queryFn: async () => {
-      const res = await api.get<Channel>(`/api/channel/${channelId}`);
-      return res.data;
-    },
-    enabled: !!channelId, 
+    queryKey: ["channels", includeMembers, includeMessages],
+    queryFn: () =>
+      getChannel({
+        id: channelId,
+        includeMembers,
+        includeMessages,
+      }),
   });
 }

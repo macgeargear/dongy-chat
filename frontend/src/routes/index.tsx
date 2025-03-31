@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Toaster } from "sonner";
+
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
@@ -34,8 +34,6 @@ function App() {
           </Link>
         </div>
       </motion.div>
-
-      <Toaster richColors />
     </div>
   );
 }

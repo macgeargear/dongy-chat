@@ -16,8 +16,12 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     try {
       const allChannels = await prisma.channel.findMany({
         include: {
-          channelMembers: true,
           messages: true,
+          channelMembers: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
       return reply.status(200).send(allChannels);
@@ -33,7 +37,14 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     try {
       const channel = await prisma.channel.findUnique({
         where: { id: channelId },
-        include: { channelMembers: true, messages: true },
+        include: {
+          channelMembers: {
+            include: {
+              user: true,
+            },
+          },
+          messages: true,
+        },
       });
       if (!channel) {
         return reply.status(404).send({ error: "Channel not found." });

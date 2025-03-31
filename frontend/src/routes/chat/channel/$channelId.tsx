@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
 // import { ActiveUserInRoomList } from "@/components/active-user-in-room-lists";
 import {
   Select,
@@ -147,7 +147,12 @@ function ChannelRoomPage() {
   };
 
   const [theme, setTheme] = useState<string>("");
-  const { data: channel } = useChannel(channelId);
+   const { data: channel, isLoading } = useChannel({
+      channelId: channelId,
+      includeMembers: true,
+      includeMessages: true,
+    });
+  
   useEffect(() => {
     if (channel) {
       setTheme(channel.theme); //initial chat theme
