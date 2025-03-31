@@ -64,7 +64,7 @@ function RouteComponent() {
           {channels?.map((channel) => (
             <Link
               key={channel.id}
-              to={`/chat/$channelId`}
+              to={`/chat/channel/$channelId`}
               params={{ channelId: channel.id }}
               className="hover:no-underline"
             >

@@ -32,7 +32,9 @@ import { useAdminBroadcast } from "@/hooks/use-admin-broadcast";
 import { useAuth } from "@/hooks/use-auth";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useTyping } from "@/hooks/message/use-typing";
-import { useMessages, type Message } from "@/hooks/message/use-messages";
+// import { useMessages, type Message } from "@/hooks/message/use-messages";
+import { type Message } from "@/types/index";
+
 import { useChannel } from "@/hooks/channel/use-channel";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel"
 import { cn } from "@/lib/utils";
@@ -47,7 +49,7 @@ const styleOptions = [
   { label: "Macaron Dream", value: "macaron-dream" },
 ];
 
-export const Route = createFileRoute("/chat/$channelId")({
+export const Route = createFileRoute("/chat/channel/$channelId")({
   component: ChannelRoomPage,
 });
 
@@ -63,14 +65,23 @@ function ChannelRoomPage() {
 
   const navigate = useNavigate();
 
-  const { data: initialMessages } = useMessages(channelId);
+  const { data: channel, isLoading } = useChannel({
+    channelId: channelId,
+    includeMembers: true,
+    includeMessages: true,
+  });
+
+  const initialMessages = channel?.messages;
 
   useEffect(() => {
     if (initialMessages) {
-      setMessages(initialMessages);
-      initialMessages.forEach((m) => pendingMessages.current.add(m.id));
+      setTimeout(() => {
+        setMessages(initialMessages);
+        initialMessages.forEach((m) => pendingMessages.current.add(m.id));
+      }, 0); 
     }
   }, [initialMessages]);
+  
 
   const onMessage = useCallback((msg: Message) => {
     if (msg.id && pendingMessages.current.has(msg.id)) return;
@@ -107,7 +118,7 @@ function ChannelRoomPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const formatTime = (dateString: string) =>
+  const formatTime = (dateString: string | Date) =>
     new Date(dateString).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -147,11 +158,7 @@ function ChannelRoomPage() {
   };
 
   const [theme, setTheme] = useState<string>("");
-   const { data: channel, isLoading } = useChannel({
-      channelId: channelId,
-      includeMembers: true,
-      includeMessages: true,
-    });
+
   
   useEffect(() => {
     if (channel) {
@@ -167,6 +174,8 @@ function ChannelRoomPage() {
       updateChannel.mutate({ ...channel, theme: newTheme });
     }
   };
+
+
 
   return (
     <div className="flex flex-col w-full p-4 mx-auto h-[85vh]">
@@ -210,8 +219,8 @@ function ChannelRoomPage() {
           <ScrollArea className="h-full ">
             <div className="p-4 space-y-4">
               {messages.map((msg, i) => {
-                const isCurrentUser = msg.sender.username === user?.username;
-                const isAdmin = msg.sender.username === "Admin";
+                const isCurrentUser = msg.senderId === user?.id;
+                const isAdmin = msg.sender?.username === "Admin";
 
                 const showTimestamp =
                   i === 0 ||
@@ -245,11 +254,11 @@ function ChannelRoomPage() {
                           className="h-8 w-8 p-0 rounded-full"
                           onClick={async () => {
                             const res = await api.post("/api/channel", {
-                              userIds: [msg.sender.id, user?.id], // Make sure `sender.id` is available
+                              userIds: [msg.sender.id, user?.id], 
                             });
 
                             navigate({
-                              to: `/chat/$channelId`,
+                              to: `/chat/channel/$channelId`,
                               params: { channelId: res.data.id },
                             });
                           }}
@@ -280,7 +289,7 @@ function ChannelRoomPage() {
                         )}
                         <div className="break-words">{msg.content}</div>
                         <div className="text-xs mt-1 text-right text-muted-foreground">
-                          {formatTime(msg.createdAt)}
+                          {formatTime(new Date(msg.createdAt))}
                         </div>
                       </div>
                     </div>
