@@ -38,10 +38,12 @@ export type CreateChannelInput = z.infer<typeof schema>;
 
 interface CreateChannelDialogProps {
   onSubmit: (input: CreateChannelInput) => void;
+  trigger?: React.ReactNode;
 }
 
 export default function CreateChannelDialog({
   onSubmit,
+  trigger,
 }: CreateChannelDialogProps) {
   const [open, setOpen] = useState(false);
   const { data: users, isLoading } = useUsers();
@@ -68,7 +70,11 @@ export default function CreateChannelDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="ml-auto">+ Create Channel</Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button className="ml-auto">+ Create Channel</Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
