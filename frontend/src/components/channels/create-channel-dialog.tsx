@@ -25,9 +25,10 @@ import {
 import { Loader2Icon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
+import type { User } from "@/types";
 
 const schema = z.object({
-  name: z.string().min(3, "Channel name must be at least 3 characters long"),
+  name: z.string(),
   isPrivate: z.boolean(),
   userIds: z
     .array(z.string().uuid())
@@ -37,11 +38,15 @@ const schema = z.object({
 export type CreateChannelInput = z.infer<typeof schema>;
 
 interface CreateChannelDialogProps {
+  user: User;
+  isPrivate: boolean;
   onSubmit: (input: CreateChannelInput) => void;
   trigger?: React.ReactNode;
 }
 
 export default function CreateChannelDialog({
+  user,
+  isPrivate,
   onSubmit,
   trigger,
 }: CreateChannelDialogProps) {
@@ -53,8 +58,8 @@ export default function CreateChannelDialog({
   const form = useForm({
     defaultValues: {
       name: "",
-      isPrivate: false,
-      userIds: [] as string[],
+      isPrivate,
+      userIds: [user.id] as string[],
     },
     validators: {
       onSubmit: schema,
@@ -88,24 +93,26 @@ export default function CreateChannelDialog({
           }}
           className="space-y-4"
         >
-          <form.Field name="name">
-            {(field) => (
-              <div>
-                <Input
-                  placeholder="Channel name"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                {field.state.meta.errors && (
-                  <p className="text-sm text-red-500">
-                    {field.state.meta.errors.join(", ")}
-                  </p>
-                )}
-              </div>
-            )}
-          </form.Field>
+          {!isPrivate && (
+            <form.Field name="name">
+              {(field) => (
+                <div>
+                  <Input
+                    placeholder="Channel name"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors && (
+                    <p className="text-sm text-red-500">
+                      {field.state.meta.errors.join(", ")}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+          )}
 
-          <form.Field name="isPrivate">
+          {/* <form.Field name="isPrivate">
             {(field) => (
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -120,7 +127,7 @@ export default function CreateChannelDialog({
                 </Label>
               </div>
             )}
-          </form.Field>
+          </form.Field> */}
 
           {isLoading ? (
             <div className="h-fit flex justify-center items-center">

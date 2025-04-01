@@ -19,7 +19,7 @@ export const Route = createFileRoute("/chat/channel/")({
 });
 
 function RouteComponent() {
-  const { channels } = ChatRoute.useLoaderData();
+  const { channels, user } = ChatRoute.useLoaderData();
   const router = useRouter();
 
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -49,11 +49,16 @@ function RouteComponent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">📂 All Channels</h1>
-        <CreateChannelDialog onSubmit={handleCreateChannel} />
+        <CreateChannelDialog
+          user={user}
+          isPrivate={false}
+          onSubmit={handleCreateChannel}
+        />
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {channels
+          .filter((channel) => !channel.isPrivate)
           ?.sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

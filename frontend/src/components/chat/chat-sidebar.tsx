@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import {
@@ -24,8 +22,8 @@ import {
   HomeIcon,
   InboxIcon,
   PlusIcon,
-  SettingsIcon,
   User2Icon,
+  UserIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -45,9 +43,9 @@ import { SwipeSidebarProvider } from "./swipe-sidebar-provider";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
-  { title: "All users", to: "/chat/users", icon: InboxIcon },
+  { title: "All users", to: "/chat/users", icon: UserIcon },
   { title: "All Channels", to: "/chat/channel", icon: GroupIcon },
-  { title: "Settings", to: "/chat/settings", icon: SettingsIcon },
+  { title: "All Inbox", to: "/chat/inbox", icon: InboxIcon },
 ];
 
 interface ChatSidebarProps {
@@ -95,40 +93,88 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
               <SidebarGroup>
                 <SidebarGroupLabel className="flex items-center justify-between">
                   <p>Channels</p>
-                  <CreateChannelDialog
-                    onSubmit={handleCreateChannel}
-                    trigger={
-                      <Button variant="ghost" className="rounded-all">
-                        <PlusIcon className="w-4 h-4" />
-                      </Button>
-                    }
-                  />
+                  {user && (
+                    <CreateChannelDialog
+                      user={user}
+                      isPrivate={false}
+                      onSubmit={handleCreateChannel}
+                      trigger={
+                        <Button variant="ghost" className="rounded-all">
+                          <PlusIcon className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
+                  )}
                 </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {channels?.map((channel) => (
-                      <SidebarMenuSubItem key={channel.name}>
-                        <SidebarMenuButton asChild>
-                          <Link
-                            to="/chat/channel/$channelId"
-                            params={{
-                              channelId: channel.id,
-                            }}
-                          >
-                            <GroupIcon className="h-4 w-4" />
-                            <span>{channel.name}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {channels
+                      ?.filter((channel) => !channel.isPrivate)
+                      .map((channel) => (
+                        <SidebarMenuSubItem key={channel.name}>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              to="/chat/channel/$channelId"
+                              params={{
+                                channelId: channel.id,
+                              }}
+                            >
+                              <GroupIcon className="h-4 w-4" />
+                              <span>{channel.name}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      ))}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
               {/* Inbox */}
               <SidebarGroup>
-                <SidebarGroupLabel>Inbox</SidebarGroupLabel>
+                <SidebarGroupLabel className="flex items-center justify-between">
+                  <p>Inbox</p>
+                  {user && (
+                    <CreateChannelDialog
+                      user={user}
+                      isPrivate={true}
+                      onSubmit={handleCreateChannel}
+                      trigger={
+                        <Button variant="ghost" className="rounded-all">
+                          <PlusIcon className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
+                  )}
+                </SidebarGroupLabel>
                 <SidebarGroupContent>
-                  <SidebarMenu>{/* Add Inbox items */}</SidebarMenu>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {channels
+                        ?.filter((channel) => channel.isPrivate)
+                        .map((channel) => (
+                          <SidebarMenuSubItem key={channel.name}>
+                            <SidebarMenuButton asChild>
+                              <Link
+                                to="/chat/channel/$channelId"
+                                params={{
+                                  channelId: channel.id,
+                                }}
+                              >
+                                <InboxIcon className="h-4 w-4" />
+                                {user && (
+                                  <span>
+                                    {
+                                      channel.channelMembers.filter(
+                                        (u) => u.userId != user?.id,
+                                      )[0].user.displayName
+                                    }
+                                  </span>
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
                 </SidebarGroupContent>
               </SidebarGroup>
             </SidebarContent>

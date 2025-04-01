@@ -29,8 +29,12 @@ export function useAuth() {
       localStorage.setItem("token", res.data.token);
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+    onSuccess: async () => {
+      await queryClient.fetchQuery({
+        queryKey: ["me"],
+        queryFn: fetchMe,
+      });
+      // queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 
@@ -44,8 +48,12 @@ export function useAuth() {
       localStorage.setItem("token", res.data.token);
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+    onSuccess: async () => {
+      // queryClient.invalidateQueries({ queryKey: ["me"] });
+      await queryClient.fetchQuery({
+        queryKey: ["me"],
+        queryFn: fetchMe,
+      });
     },
   });
 

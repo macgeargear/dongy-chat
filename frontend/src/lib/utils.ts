@@ -1,3 +1,4 @@
+import type { Channel, User } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -27,3 +28,13 @@ export const styleOptions = [
   { label: "Honey Glaze", value: "honey-glaze" },
   { label: "Macaron Dream", value: "macaron-dream" },
 ];
+
+export const getChannelTitle = (channel: Channel, user: User) => {
+  if (channel.channelMembers?.length == 2 && channel.isPrivate) {
+    return channel.channelMembers
+      .filter((member) => member.userId != user?.id)
+      .map((member) => member?.user.displayName)
+      .toString();
+  }
+  return channel.name;
+};

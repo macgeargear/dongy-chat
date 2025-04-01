@@ -24,14 +24,20 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useTyping } from "@/hooks/message/use-typing";
-import { type Channel, type Message } from "@/types/index";
+import { type Message } from "@/types/index";
 
 import { getChannel } from "@/hooks/channel/use-channel";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
-import { cn, styleOptions } from "@/lib/utils";
+import { cn, getChannelTitle, styleOptions } from "@/lib/utils";
 import api from "@/lib/axios";
 
 import { v4 as uuidv4 } from "uuid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/chat/channel/$channelId")({
   loader: async ({ params }) => {
@@ -52,6 +58,8 @@ function ChannelRoomPage() {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const pendingMessages = useRef(new Set<string>());
 
+  const [activeUser, setActiveUser] = useState<any[]>([]);
+
   const navigate = useNavigate();
 
   const initialMessages = channel.messages;
@@ -71,7 +79,18 @@ function ChannelRoomPage() {
     setMessages((prev) => [...prev, msg]);
   }, []);
 
-  const { sendMessage } = useChatSocket(channelId, onMessage);
+  const onActiveUser = useCallback((user: any) => {
+    // if (new Set(user) != new Set(activeUser)) setActiveUser(user);
+    setActiveUser(user);
+  }, []);
+
+  const { sendMessage } = useChatSocket(
+    channelId,
+    user!,
+    activeUser,
+    onMessage,
+    onActiveUser,
+  );
 
   const { typing, stopTyping } = useTyping(
     channelId,
@@ -133,16 +152,6 @@ function ChannelRoomPage() {
     return colors[hash % colors.length];
   };
 
-  const getChannelTitle = (channel: Channel) => {
-    // if (channel.channelMembers?.length == 2 && channel.isPrivate) {
-    //   return channel.channelMembers
-    //     .filter((member) => member.userId != user?.id)
-    //     .map((member) => member?.user.displayName)
-    //     .toString();
-    // }
-    return channel.name;
-  };
-
   const [theme, setTheme] = useState<string>("");
 
   useEffect(() => {
@@ -160,12 +169,14 @@ function ChannelRoomPage() {
     }
   };
 
+  console.log("Active Users: ", activeUser);
+
   return (
     <div className="flex flex-col w-full p-4 mx-auto h-[85vh]">
       <Card
         className={`flex flex-col h-full shadow-md border-slate-200 theme-${theme}`}
       >
-        <CardHeader className="p-4 border-b flex flex-row items-center justify-between gap-4">
+        <CardHeader className="p-4 border-b flex flex-row flex-wrap items-center justify-between gap-4">
           <div className="flex flex-row gap-3 justify-center">
             <Link
               className={cn(buttonVariants({ variant: "ghost" }))}
@@ -174,24 +185,46 @@ function ChannelRoomPage() {
               <ArrowLeft className="h-5 w-5" />
             </Link>
 
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col flex-grow justify-start gap-1">
               <h1 className="text-xl font-semibold flex items-center gap-2">
                 <span className="text-primary">💬</span>
-                {channel ? (
-                  getChannelTitle(channel)
+                {channel && user ? (
+                  getChannelTitle(channel, user)
                 ) : (
                   <Loader2Icon className="size-4" />
                 )}
-                <Badge variant="outline" className="ml-2">
-                  {messages.length} messages
-                </Badge>
               </h1>{" "}
+              <Badge variant="outline">{messages.length} messages</Badge>
             </div>
+
+            {activeUser.length > 0 && (
+              <div className="text-sm text-muted-foreground ml-4">
+                <div className="flex items-center gap-1">
+                  {activeUser.map((user) => (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Avatar className="h-8 w-8 border">
+                            <AvatarImage src={user.user.imageUrl} />
+                            <AvatarFallback
+                              className={getAvatarColor(user.user.displayName)}
+                            >
+                              {user.user.displayName[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent>{user.user.displayName}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-row gap-3 items-center">
             <span className="text-xl">🎨</span>
             <Select onValueChange={handleThemeChange}>
-              <SelectTrigger className="w-[120px]">
+              <SelectTrigger className="w-fit">
                 <SelectValue placeholder="Select Theme" />
               </SelectTrigger>
               <SelectContent>

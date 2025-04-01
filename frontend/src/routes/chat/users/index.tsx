@@ -23,10 +23,7 @@ function RouteComponent() {
   return (
     <main className="min-h-screen bg-background py-10">
       <div className="container mx-auto px-4">
-        <h1 className="text-2xl font-medium mb-2 text-center">Chat Contacts</h1>
-        <p className="text-center text-muted-foreground mb-8 text-sm">
-          Select a contact to message
-        </p>
+        <h1 className="text-2xl font-medium mb-8 text-center">All Users</h1>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -36,14 +33,7 @@ function RouteComponent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {users?.map((user) => (
-              <UserCard
-                key={user.id}
-                user={user}
-                onDirectMessage={() => {}}
-                onGroupChat={() => {}}
-              />
-            ))}
+            {users?.map((user) => <UserCard key={user.id} user={user} />)}
           </div>
         )}
       </div>

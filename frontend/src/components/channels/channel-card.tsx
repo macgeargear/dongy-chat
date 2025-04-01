@@ -1,9 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
   EditIcon,
-  LockIcon,
   MessageCircleIcon,
   TrashIcon,
   UserPlusIcon,
@@ -80,22 +78,6 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
                   {channel.name}
                 </CardTitle>
               </Link>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge
-                  variant={channel.isPrivate ? "secondary" : "default"}
-                  className="text-xs font-normal"
-                >
-                  {channel.isPrivate ? (
-                    <span className="flex items-center gap-1">
-                      <LockIcon className="h-3 w-3" />
-                      Private
-                    </span>
-                  ) : (
-                    "Public"
-                  )}
-                </Badge>
-              </div>
             </div>
 
             <div className="flex gap-1">
