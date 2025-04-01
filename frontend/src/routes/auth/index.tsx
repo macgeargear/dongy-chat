@@ -90,7 +90,7 @@ function RouteComponent() {
   const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
     try {
       await login({ ...values });
-      navigate({ to: "/chat" });
+      navigate({ to: "/chat/channel" });
     } catch (err: any) {
       loginForm.setError("root", {
         message: err.message || "An error occurred",
