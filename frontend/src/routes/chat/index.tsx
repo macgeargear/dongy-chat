@@ -5,5 +5,5 @@ export const Route = createFileRoute("/chat/")({
 });
 
 function RouteComponent() {
-  return <div></div>;
+  return <div>Home</div>;
 }

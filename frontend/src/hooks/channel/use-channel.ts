@@ -15,7 +15,7 @@ export async function getChannel({
   if (includeMessages) params.append("messages", "true");
   if (includeMembers) params.append("members", "true");
 
-  const res = await api.get<Channel[]>(`/api/channel/${id}`, {
+  const res = await api.get<Channel>(`/api/channel/${id}`, {
     params,
   });
   return res.data;
