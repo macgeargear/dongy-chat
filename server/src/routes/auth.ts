@@ -47,7 +47,11 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const token = app.jwt.sign({
-      user: user,
+      id: user.id,
+      password: user.password,
+      username: user.username,
+      displayName: user.displayName,
+      imageUrl: user.imageUrl,
     });
     return reply.send({ token });
   });
