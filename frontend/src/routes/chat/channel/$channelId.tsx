@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, PinIcon, Send } from "lucide-react";
+import { ArrowLeft, Loader2Icon, Send } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -13,13 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipProvider,
-//   TooltipTrigger,
-// } from "@/components/ui/tooltip";
-// import { ActiveUserInRoomList } from "@/components/active-user-in-room-lists";
 import {
   Select,
   SelectTrigger,
@@ -28,17 +21,17 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-import { useAdminBroadcast } from "@/hooks/use-admin-broadcast";
 import { useAuth } from "@/hooks/use-auth";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useTyping } from "@/hooks/message/use-typing";
-// import { useMessages, type Message } from "@/hooks/message/use-messages";
-import { type Message } from "@/types/index";
+import { type Channel, type Message } from "@/types/index";
 
-import { useChannel } from "@/hooks/channel/use-channel";
-import { useUpdateChannel } from "@/hooks/channel/use-update-channel"
+import { getChannel } from "@/hooks/channel/use-channel";
+import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
 import { cn } from "@/lib/utils";
 import api from "@/lib/axios";
+
+import { v4 as uuidv4 } from "uuid";
 
 const styleOptions = [
   { label: "Default", value: "default" },
@@ -50,10 +43,15 @@ const styleOptions = [
 ];
 
 export const Route = createFileRoute("/chat/channel/$channelId")({
+  loader: async ({ params }) => {
+    const channel = await getChannel({ id: params.channelId });
+    return { channel };
+  },
   component: ChannelRoomPage,
 });
 
 function ChannelRoomPage() {
+  const { channel } = Route.useLoaderData();
   const { channelId } = Route.useParams();
   const { user } = useAuth();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -65,23 +63,16 @@ function ChannelRoomPage() {
 
   const navigate = useNavigate();
 
-  const { data: channel, isLoading } = useChannel({
-    channelId: channelId,
-    includeMembers: true,
-    includeMessages: true,
-  });
-
-  const initialMessages = channel?.messages;
+  const initialMessages = channel.messages;
 
   useEffect(() => {
     if (initialMessages) {
       setTimeout(() => {
         setMessages(initialMessages);
         initialMessages.forEach((m) => pendingMessages.current.add(m.id));
-      }, 0); 
+      }, 0);
     }
   }, [initialMessages]);
-  
 
   const onMessage = useCallback((msg: Message) => {
     if (msg.id && pendingMessages.current.has(msg.id)) return;
@@ -97,11 +88,18 @@ function ChannelRoomPage() {
     (username) => setTypingUsers((u) => u.filter((x) => x !== username)),
   );
 
-  const { announce } = useAdminBroadcast();
-
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage(input);
+    sendMessage({
+      channel,
+      channelId,
+      sender: user!,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      content: input,
+      senderId: user!.id,
+      id: uuidv4(),
+    });
     setInput("");
     stopTyping();
     inputRef.current?.focus();
@@ -144,22 +142,18 @@ function ChannelRoomPage() {
     return colors[hash % colors.length];
   };
 
-  const getChannelTitle = (msg: Message) => {
-    if (!msg.channel) return `Room: ${channelId}`;
-
-    if (!msg.channel.isPrivate && msg.channel.name)
-      return msg.channel.name;
-
-    const other = msg.channel.channelMembers.find(
-      (m) => m.user.username !== user?.username,
-    );
-
-    return other?.user.username ?? "Direct Message";
+  const getChannelTitle = (channel: Channel) => {
+    if (channel.channelMembers?.length == 2) {
+      return channel.channelMembers
+        .filter((member) => member.userId != user?.id)
+        .map((member) => member?.user.displayName)
+        .toString();
+    }
+    return channel.name;
   };
 
   const [theme, setTheme] = useState<string>("");
 
-  
   useEffect(() => {
     if (channel) {
       setTheme(channel.theme); //initial chat theme
@@ -169,29 +163,34 @@ function ChannelRoomPage() {
   const updateChannel = useUpdateChannel();
 
   const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme); 
+    setTheme(newTheme);
     if (channel) {
       updateChannel.mutate({ ...channel, theme: newTheme });
     }
   };
 
-
-
   return (
     <div className="flex flex-col w-full p-4 mx-auto h-[85vh]">
-      <Card className={`flex flex-col h-full shadow-md border-slate-200 theme-${theme}`}>
+      <Card
+        className={`flex flex-col h-full shadow-md border-slate-200 theme-${theme}`}
+      >
         <CardHeader className="p-4 border-b flex flex-row items-center justify-between gap-4">
           <div className="flex flex-row gap-3 justify-center">
-            <Link className={cn(buttonVariants({ variant: "ghost" }))} to="/chat">
+            <Link
+              className={cn(buttonVariants({ variant: "ghost" }))}
+              to="/chat/channel"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Link>
 
             <div className="flex flex-col flex-grow">
               <h1 className="text-xl font-semibold flex items-center gap-2">
                 <span className="text-primary">💬</span>
-                {messages[0]
-                  ? getChannelTitle(messages[0])
-                  : `Room: ${channelId}`}
+                {channel ? (
+                  getChannelTitle(channel)
+                ) : (
+                  <Loader2Icon className="size-4" />
+                )}
                 <Badge variant="outline" className="ml-2">
                   {messages.length} messages
                 </Badge>
@@ -225,7 +224,7 @@ function ChannelRoomPage() {
                 const showTimestamp =
                   i === 0 ||
                   new Date(msg.createdAt).toDateString() !==
-                  new Date(messages[i - 1].createdAt).toDateString();
+                    new Date(messages[i - 1].createdAt).toDateString();
 
                 return (
                   <div key={msg.id}>
@@ -247,14 +246,14 @@ function ChannelRoomPage() {
                         isAdmin ? "mx-auto" : "",
                       )}
                     >
-                      {!isCurrentUser && !isAdmin && (
+                      {!isCurrentUser && (
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 p-0 rounded-full"
                           onClick={async () => {
                             const res = await api.post("/api/channel", {
-                              userIds: [msg.sender.id, user?.id], 
+                              userIds: [msg.sender.id, user?.id],
                             });
 
                             navigate({
@@ -264,6 +263,7 @@ function ChannelRoomPage() {
                           }}
                         >
                           <Avatar className="h-8 w-8">
+                            <AvatarImage src={msg.sender.imageUrl} />
                             <AvatarFallback
                               className={getAvatarColor(msg.sender.username)}
                             >
@@ -271,15 +271,15 @@ function ChannelRoomPage() {
                             </AvatarFallback>
                           </Avatar>
                         </Button>
-                      )}{" "}
+                      )}
                       <div
                         className={cn(
                           "rounded-lg px-3 py-2 text-sm",
                           isCurrentUser
-                            ?  "bg-[var(--message-primary)] text-[var(--message-primary-foreground)]"
+                            ? "bg-[var(--message-primary)] text-[var(--message-primary-foreground)]"
                             : isAdmin
                               ? "bg-muted text-muted-foreground text-center"
-                              :  "bg-[var(--message-secondary)] text-[var(--message-secondary-foreground)]",
+                              : "bg-[var(--message-secondary)] text-[var(--message-secondary-foreground)]",
                         )}
                       >
                         {!isCurrentUser && !isAdmin && (
@@ -305,8 +305,6 @@ function ChannelRoomPage() {
               <div ref={bottomRef} />
             </div>
           </ScrollArea>
-
-
         </CardContent>
 
         <CardFooter className="p-4 border-t">
@@ -326,8 +324,6 @@ function ChannelRoomPage() {
               <Send className="h-4 w-4" />
             </Button>
           </div>
-
-         
         </CardFooter>
       </Card>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { socket } from "@/lib/socket";
+import type { Message } from "@/types";
 
 export function useChatSocket(
   channelId: string,
@@ -13,8 +14,8 @@ export function useChatSocket(
     };
   }, [channelId, onMessage]);
 
-  const sendMessage = (content: string) => {
-    socket.emit("send_message", { channelId, content });
+  const sendMessage = (msg: Message) => {
+    socket.emit("send_message", { channelId, content: msg.content, msg });
   };
 
   return { sendMessage };
