@@ -1,8 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import CreateChannelDialog, {
   type CreateChannelInput,
 } from "@/components/channels/create-channel-dialog";
-import { useChannels } from "@/hooks/channel/use-channels";
 import { useCreateChannel } from "@/hooks/channel/use-create-channel";
 import { ChannelCard } from "@/components/channels/channel-card";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
@@ -13,17 +12,16 @@ import {
 import { useState } from "react";
 import type { Channel } from "@/types";
 import toast from "react-hot-toast";
-import { ChannelCardSkeleton } from "@/components/channels/channel-card-skeleton";
+import { Route as ChatRoute } from "../route";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: channels, isLoading } = useChannels({
-    includeMembers: true,
-    includeMessages: true,
-  });
+  const { channels } = ChatRoute.useLoaderData();
+  const router = useRouter();
+
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
   const createChannel = useCreateChannel();
@@ -35,6 +33,7 @@ function RouteComponent() {
       success: "Channel created successfully!",
       error: "Failed to create channel",
     });
+    router.invalidate();
   };
 
   const handleUpdateChannel = async (data: UpdateChannelInput) => {
@@ -43,6 +42,7 @@ function RouteComponent() {
       success: "Channel updated successfully!",
       error: "Failed to update channel",
     });
+    router.invalidate();
   };
 
   return (
@@ -52,30 +52,20 @@ function RouteComponent() {
         <CreateChannelDialog onSubmit={handleCreateChannel} />
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <ChannelCardSkeleton />
-          <ChannelCardSkeleton />
-          <ChannelCardSkeleton />
-          <ChannelCardSkeleton />
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {channels?.map((channel) => (
-            <Link
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {channels
+          ?.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .map((channel) => (
+            <ChannelCard
               key={channel.id}
-              to={`/chat/channel/$channelId`}
-              params={{ channelId: channel.id }}
-              className="hover:no-underline"
-            >
-              <ChannelCard
-                channel={channel}
-                onEdit={() => setSelectedChannel(channel)}
-              />
-            </Link>
-          ))}
-        </div>
-      )}
+              channel={channel}
+              onEdit={() => setSelectedChannel(channel)}
+            />
+          ))}{" "}
+      </div>
 
       {selectedChannel && (
         <UpdateChannelDialog
