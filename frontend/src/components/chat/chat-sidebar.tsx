@@ -109,7 +109,12 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                     {channels?.map((channel) => (
                       <SidebarMenuSubItem key={channel.name}>
                         <SidebarMenuButton asChild>
-                          <Link to={`/chat`}>
+                          <Link
+                            to="/chat/channel/$channelId"
+                            params={{
+                              channelId: channel.id,
+                            }}
+                          >
                             <GroupIcon className="h-4 w-4" />
                             <span>{channel.name}</span>
                           </Link>
