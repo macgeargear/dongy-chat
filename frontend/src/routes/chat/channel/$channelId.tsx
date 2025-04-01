@@ -28,19 +28,10 @@ import { type Channel, type Message } from "@/types/index";
 
 import { getChannel } from "@/hooks/channel/use-channel";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
-import { cn } from "@/lib/utils";
+import { cn, styleOptions } from "@/lib/utils";
 import api from "@/lib/axios";
 
 import { v4 as uuidv4 } from "uuid";
-
-const styleOptions = [
-  { label: "Default", value: "default" },
-  { label: "Blueberry Milk", value: "blueberry-milk" },
-  { label: "Peach Fuzz", value: "peach-fuzz" },
-  { label: "Matcha Latte", value: "matcha-latte" },
-  { label: "Honey Glaze", value: "honey-glaze" },
-  { label: "Macaron Dream", value: "macaron-dream" },
-];
 
 export const Route = createFileRoute("/chat/channel/$channelId")({
   loader: async ({ params }) => {
