@@ -1,8 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useCreateChannel } from "@/hooks/channel/use-create-channel";
-import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
-import { useState } from "react";
-import type { Channel } from "@/types";
+import { createFileRoute } from "@tanstack/react-router";
+
 import { Route as ChatRoute } from "../route";
 import { InboxIcon } from "lucide-react";
 import { UserCard } from "@/components/user/user-card";
@@ -23,7 +20,13 @@ function RouteComponent() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {channels
-          .filter((channel) => channel.isPrivate)
+          .filter(
+            (channel) =>
+              channel.isPrivate &&
+              channel.channelMembers
+                .map((member) => member.userId)
+                .includes(user.id),
+          )
           ?.sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

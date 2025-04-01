@@ -148,31 +148,38 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                 <SidebarGroupContent>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {channels
-                        ?.filter((channel) => channel.isPrivate)
-                        .map((channel) => (
-                          <SidebarMenuSubItem key={channel.name}>
-                            <SidebarMenuButton asChild>
-                              <Link
-                                to="/chat/channel/$channelId"
-                                params={{
-                                  channelId: channel.id,
-                                }}
-                              >
-                                <InboxIcon className="h-4 w-4" />
-                                {user && (
-                                  <span>
-                                    {
-                                      channel.channelMembers.filter(
-                                        (u) => u.userId != user?.id,
-                                      )[0].user.displayName
-                                    }
-                                  </span>
-                                )}
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                      {user &&
+                        channels
+                          ?.filter(
+                            (channel) =>
+                              channel.isPrivate &&
+                              channel.channelMembers
+                                .map((member) => member.userId)
+                                .includes(user.id),
+                          )
+                          .map((channel) => (
+                            <SidebarMenuSubItem key={channel.name}>
+                              <SidebarMenuButton asChild>
+                                <Link
+                                  to="/chat/channel/$channelId"
+                                  params={{
+                                    channelId: channel.id,
+                                  }}
+                                >
+                                  <InboxIcon className="h-4 w-4" />
+                                  {user && (
+                                    <span>
+                                      {
+                                        channel.channelMembers.filter(
+                                          (u) => u.userId != user?.id,
+                                        )[0].user.displayName
+                                      }
+                                    </span>
+                                  )}
+                                </Link>
+                              </SidebarMenuButton>
+                            </SidebarMenuSubItem>
+                          ))}
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroupContent>
