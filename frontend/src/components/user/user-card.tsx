@@ -14,7 +14,7 @@ import { cn, statusColors } from "@/lib/utils";
 
 interface UserCardProps {
   channel?: Channel;
-  allActiveUser: User[];
+  allActiveUser?: User[];
   user: User;
 }
 
@@ -34,7 +34,7 @@ export function UserCard({ user, channel, allActiveUser }: UserCardProps) {
                 {user.displayName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {allActiveUser.some((activeUser) => activeUser.id === user.id) ? (
+            {allActiveUser?.some((activeUser) => activeUser.id === user.id) ? (
               <span
                 className={cn(
                   "absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-background",
