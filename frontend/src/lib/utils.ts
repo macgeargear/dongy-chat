@@ -18,3 +18,12 @@ export const statusColors = {
   away: "bg-amber-500",
   busy: "bg-rose-500",
 };
+
+export const styleOptions = [
+  { label: "Default", value: "default" },
+  { label: "Blueberry Milk", value: "blueberry-milk" },
+  { label: "Peach Fuzz", value: "peach-fuzz" },
+  { label: "Matcha Latte", value: "matcha-latte" },
+  { label: "Honey Glaze", value: "honey-glaze" },
+  { label: "Macaron Dream", value: "macaron-dream" },
+];

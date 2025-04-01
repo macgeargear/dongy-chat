@@ -75,6 +75,10 @@ export function registerSocket(app: FastifyInstance) {
             channelId,
             content,
           },
+          include: {
+            sender: true,
+            channel: true,
+          },
         });
 
         io.to(channelId).emit("receive_message", message);

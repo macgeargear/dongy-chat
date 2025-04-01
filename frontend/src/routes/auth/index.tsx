@@ -90,7 +90,7 @@ function RouteComponent() {
   const handleLogin = async (values: z.infer<typeof loginFormSchema>) => {
     try {
       await login({ ...values });
-      navigate({ to: "/chat" });
+      navigate({ to: "/chat/channel" });
     } catch (err: any) {
       loginForm.setError("root", {
         message: err.message || "An error occurred",
@@ -251,7 +251,7 @@ function RouteComponent() {
                 <p className="font-medium">Welcome, {user.username}!</p>
                 <div className="mt-2">
                   <RouterLink
-                    to="/chat"
+                    to="/chat/channel"
                     className="flex items-center text-sm font-medium text-green-700 hover:text-green-900"
                   >
                     Go to Chat →

@@ -30,7 +30,6 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  // Get a specific channel by ID
   app.get("/:id", { preHandler: requireAuth }, async (req, reply) => {
     const { id: channelId } = req.params as { id: string };
     if (!channelId) return reply.status(400).send({ error: "Invalid input" });
@@ -43,7 +42,11 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
               user: true,
             },
           },
-          messages: true,
+          messages: {
+            include: {
+              sender: true,
+            },
+          },
         },
       });
       if (!channel) {

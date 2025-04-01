@@ -17,6 +17,7 @@ import { Route as ChatIndexImport } from './routes/chat/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as ChatUsersIndexImport } from './routes/chat/users/index'
 import { Route as ChatChannelIndexImport } from './routes/chat/channel/index'
+import { Route as ChatChannelChannelIdImport } from './routes/chat/channel/$channelId'
 
 // Create/Update Routes
 
@@ -56,6 +57,12 @@ const ChatChannelIndexRoute = ChatChannelIndexImport.update({
   getParentRoute: () => ChatRouteRoute,
 } as any)
 
+const ChatChannelChannelIdRoute = ChatChannelChannelIdImport.update({
+  id: '/channel/$channelId',
+  path: '/channel/$channelId',
+  getParentRoute: () => ChatRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIndexImport
       parentRoute: typeof ChatRouteImport
     }
+    '/chat/channel/$channelId': {
+      id: '/chat/channel/$channelId'
+      path: '/channel/$channelId'
+      fullPath: '/chat/channel/$channelId'
+      preLoaderRoute: typeof ChatChannelChannelIdImport
+      parentRoute: typeof ChatRouteImport
+    }
     '/chat/channel/': {
       id: '/chat/channel/'
       path: '/channel'
@@ -109,12 +123,14 @@ declare module '@tanstack/react-router' {
 
 interface ChatRouteRouteChildren {
   ChatIndexRoute: typeof ChatIndexRoute
+  ChatChannelChannelIdRoute: typeof ChatChannelChannelIdRoute
   ChatChannelIndexRoute: typeof ChatChannelIndexRoute
   ChatUsersIndexRoute: typeof ChatUsersIndexRoute
 }
 
 const ChatRouteRouteChildren: ChatRouteRouteChildren = {
   ChatIndexRoute: ChatIndexRoute,
+  ChatChannelChannelIdRoute: ChatChannelChannelIdRoute,
   ChatChannelIndexRoute: ChatChannelIndexRoute,
   ChatUsersIndexRoute: ChatUsersIndexRoute,
 }
@@ -128,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRouteRouteWithChildren
   '/auth': typeof AuthIndexRoute
   '/chat/': typeof ChatIndexRoute
+  '/chat/channel/$channelId': typeof ChatChannelChannelIdRoute
   '/chat/channel': typeof ChatChannelIndexRoute
   '/chat/users': typeof ChatUsersIndexRoute
 }
@@ -136,6 +153,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthIndexRoute
   '/chat': typeof ChatIndexRoute
+  '/chat/channel/$channelId': typeof ChatChannelChannelIdRoute
   '/chat/channel': typeof ChatChannelIndexRoute
   '/chat/users': typeof ChatUsersIndexRoute
 }
@@ -146,6 +164,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRouteRouteWithChildren
   '/auth/': typeof AuthIndexRoute
   '/chat/': typeof ChatIndexRoute
+  '/chat/channel/$channelId': typeof ChatChannelChannelIdRoute
   '/chat/channel/': typeof ChatChannelIndexRoute
   '/chat/users/': typeof ChatUsersIndexRoute
 }
@@ -157,16 +176,24 @@ export interface FileRouteTypes {
     | '/chat'
     | '/auth'
     | '/chat/'
+    | '/chat/channel/$channelId'
     | '/chat/channel'
     | '/chat/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/chat' | '/chat/channel' | '/chat/users'
+  to:
+    | '/'
+    | '/auth'
+    | '/chat'
+    | '/chat/channel/$channelId'
+    | '/chat/channel'
+    | '/chat/users'
   id:
     | '__root__'
     | '/'
     | '/chat'
     | '/auth/'
     | '/chat/'
+    | '/chat/channel/$channelId'
     | '/chat/channel/'
     | '/chat/users/'
   fileRoutesById: FileRoutesById
@@ -206,6 +233,7 @@ export const routeTree = rootRoute
       "filePath": "chat/route.tsx",
       "children": [
         "/chat/",
+        "/chat/channel/$channelId",
         "/chat/channel/",
         "/chat/users/"
       ]
@@ -215,6 +243,10 @@ export const routeTree = rootRoute
     },
     "/chat/": {
       "filePath": "chat/index.tsx",
+      "parent": "/chat"
+    },
+    "/chat/channel/$channelId": {
+      "filePath": "chat/channel/$channelId.tsx",
       "parent": "/chat"
     },
     "/chat/channel/": {

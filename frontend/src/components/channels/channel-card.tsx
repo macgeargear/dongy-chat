@@ -25,6 +25,7 @@ import {
 } from "../ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUsers } from "@/hooks/user/use-users";
+import { Link, useRouter } from "@tanstack/react-router";
 
 interface ChannelCardProps {
   channel: Channel;
@@ -32,7 +33,7 @@ interface ChannelCardProps {
 }
 
 export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
-  console.log({ channel });
+  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteChannel = useDeleteChannel();
 
@@ -44,6 +45,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
     await deleteChannel.mutateAsync(channel.id);
     toast.success("Channel deleted successfully");
     setIsDeleteOpen(false);
+    router.invalidate();
   };
 
   const handleAddUserChannel = async (userId: string) => {
@@ -58,6 +60,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
         error: "Failed to add user to channel",
       },
     );
+    router.invalidate();
   };
 
   return (
@@ -66,9 +69,17 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-base font-medium line-clamp-1">
-                {channel.name}
-              </CardTitle>
+              <Link
+                preload="intent"
+                key={channel.id}
+                to={`/chat/channel/$channelId`}
+                params={{ channelId: channel.id }}
+                className="hover:no-underline"
+              >
+                <CardTitle className="text-base font-medium line-clamp-1">
+                  {channel.name}
+                </CardTitle>
+              </Link>
 
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge
@@ -91,7 +102,11 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onEdit}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onEdit();
+                }}
                 className="p-1 text-muted-foreground hover:text-foreground"
               >
                 <EditIcon className="h-4 w-4" />
@@ -151,7 +166,9 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setIsDeleteOpen(true);
                 }}
                 className="p-1 text-red-500 hover:bg-red-100"

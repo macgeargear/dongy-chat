@@ -132,3 +132,69 @@ code {
     @apply bg-background text-foreground;
     }
 }
+
+.theme-default {
+    --card-header-bg: card;
+    --card-content-bg: card; 
+    --card-footer-bg: card; 
+    --message-primary:  oklch(0.21 0.006 285.885);
+    --message-primary-foreground: oklch(0.985 0 0);
+    --message-secondary: oklch(0.967 0.001 286.375);
+    --message-secondary-foreground: black;
+}
+
+
+.theme-blueberry-milk {
+    --card-header-bg: #FFD1E3; /* Soft pink */
+    --card-content-bg: #FFF5F7; /* Lightest pink */
+    --card-footer-bg: #FFD1E3; /* Soft pink, same as header */
+    --message-primary: #FF70A6; /* Strawberry pink */
+    --message-primary-foreground: #ffffff;
+    --message-secondary: #A57AFF; /* Soft violet */
+    --message-secondary-foreground: #ffffff;
+}
+
+.theme-peach-fuzz {
+    --card-header-bg: #FFE0B5; /* Light peach */
+    --card-content-bg: #FFF8EC; /* Soft cream */
+    --card-footer-bg: #FFE0B5; /* Light peach, same as header */
+    --message-primary: #FF9F68; /* Soft orange */
+    --message-primary-foreground: #ffffff;
+    --message-secondary: #FFB7A5; /* Coral pink */
+    --message-secondary-foreground: #ffffff;
+}
+
+.theme-matcha-latte {
+    --card-header-bg: #D4E2C8; /* Matcha cream */
+    --card-content-bg: #F3F6EC; /* Lightest green */
+    --card-footer-bg: #D4E2C8; /* Matcha cream, same as header */
+    --message-primary: #79A47F; /* Matcha green */
+    --message-primary-foreground: #ffffff;
+    --message-secondary: #8BB87D; /* Soft moss */
+    --message-secondary-foreground: #ffffff;
+}
+
+.theme-honey-glaze {
+    --card-header-bg: #FFDE90; /* Golden honey */
+    --card-content-bg: #FFF8D6; /* Soft pastel yellow */
+    --card-footer-bg: #FFDE90; /* Golden honey, same as header */
+    --message-primary: #FFA858; /* Toasted orange */
+    --message-primary-foreground: #ffffff;
+    --message-secondary: #EBAE58; /* Soft amber */
+    --message-secondary-foreground: #ffffff;
+}
+
+.theme-macaron-dream {
+    --card-header-bg: #F5D1FF; /* Soft lilac */
+    --card-content-bg: #FCEFF9; /* Light pinkish white */
+    --card-footer-bg: #F5D1FF; /* Soft lilac, same as header */
+    --message-primary: #FFB6C1; /* Soft rose */
+    --message-primary-foreground: #ffffff;
+    --message-secondary: #93E9BE; /* Mint green */
+    --message-secondary-foreground: #ffffff;
+}
+
+
+
+
+
