@@ -134,12 +134,12 @@ function ChannelRoomPage() {
   };
 
   const getChannelTitle = (channel: Channel) => {
-    if (channel.channelMembers?.length == 2) {
-      return channel.channelMembers
-        .filter((member) => member.userId != user?.id)
-        .map((member) => member?.user.displayName)
-        .toString();
-    }
+    // if (channel.channelMembers?.length == 2 && channel.isPrivate) {
+    //   return channel.channelMembers
+    //     .filter((member) => member.userId != user?.id)
+    //     .map((member) => member?.user.displayName)
+    //     .toString();
+    // }
     return channel.name;
   };
 
