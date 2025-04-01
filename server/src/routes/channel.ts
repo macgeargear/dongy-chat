@@ -68,7 +68,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
       userIds: string[];
     };
 
-    if (!name || typeof isPrivate === "undefined" || userIds.length == 0) {
+    if (typeof isPrivate === "undefined" || userIds.length == 0) {
       return reply.status(400).send({ error: "Invalid input." });
     }
     if (userIds.length > 2 && isPrivate) {

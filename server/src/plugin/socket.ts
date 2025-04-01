@@ -1,11 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { Server } from "socket.io";
 import prisma from "../utils/prisma";
+import { User } from "@prisma/client";
 
-export const activeUsers = new Map<
-  string,
-  { socketId: string; lastActive: Date | null }
->();
+export const activeUsers: Record<
+  string, // channelId
+  { socketId: string; user: User }[]
+> = {};
 
 export function registerSocket(app: FastifyInstance) {
   // const io: Server = app.io;
@@ -33,30 +34,35 @@ export function registerSocket(app: FastifyInstance) {
     const user = socket.data.user;
     console.log(`${user.username} connected [${socket.id}]`);
 
-    // Join channel
-    socket.on("join_channel", (channelId: string) => {
+    socket.on("join_channel", ({ channelId, user }) => {
+      if (!user) return;
       socket.join(channelId);
-      console.log(`${user.username} joined channel ${channelId}`);
-    });
+      const userWithSocket = { user, socketId: socket.id };
 
-    // Get active users in each room
-    socket.on("get_active_users_in_room", (conversationId: string) => {
-      const room = io.sockets.adapter.rooms.get(
-        `conversation:${conversationId}`,
+      if (!activeUsers[channelId]) {
+        activeUsers[channelId] = [];
+      }
+
+      const alreadyJoined = activeUsers[channelId].some(
+        (u) => u.user.id === user.id,
       );
 
-      const usersInRoom = room ? Array.from(room) : [];
+      if (!alreadyJoined) {
+        activeUsers[channelId].push(userWithSocket);
+      }
 
-      const activeUsersInRoom = usersInRoom
-        .map((socketId) => {
-          const user = Array.from(activeUsers.values()).find(
-            (user) => user.socketId === socketId,
-          );
-          return user ? { userId: user.socketId } : null;
-        })
-        .filter((user) => user !== null);
+      io.to(channelId).emit("activeUsers", activeUsers[channelId]);
+    });
 
-      socket.emit("activeUsersInRoom", activeUsersInRoom);
+    socket.on("leave_channel", ({ channelId, user }) => {
+      if (!user) return;
+      if (!activeUsers[channelId]) return;
+
+      activeUsers[channelId] = activeUsers[channelId].filter(
+        (u) => u.socketId !== socket.id,
+      );
+
+      io.to(channelId).emit("activeUsers", activeUsers[channelId]);
     });
 
     // Send message to room
@@ -105,7 +111,17 @@ export function registerSocket(app: FastifyInstance) {
     });
 
     socket.on("disconnect", () => {
-      console.log(`${user.username} disconnected`);
+      for (const channelId in activeUsers) {
+        const before = activeUsers[channelId].length;
+        activeUsers[channelId] = activeUsers[channelId].filter(
+          (u) => u.socketId !== socket.id,
+        );
+        const after = activeUsers[channelId].length;
+
+        if (before !== after) {
+          io.to(channelId).emit("activeUsers", activeUsers[channelId]);
+        }
+      }
     });
   });
 }
