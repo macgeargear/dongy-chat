@@ -5,7 +5,6 @@ import type { Message, User } from "@/types";
 export function useChatSocket(
   channelId: string,
   user: User,
-  activeUser: any,
   onMessage: (msg: any) => void,
   onActiveUser: (user: any) => void,
 ) {

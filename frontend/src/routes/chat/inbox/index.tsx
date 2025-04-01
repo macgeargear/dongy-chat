@@ -1,15 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { type CreateChannelInput } from "@/components/channels/create-channel-dialog";
 import { useCreateChannel } from "@/hooks/channel/use-create-channel";
-import { ChannelCard } from "@/components/channels/channel-card";
 import { useUpdateChannel } from "@/hooks/channel/use-update-channel";
-import {
-  UpdateChannelDialog,
-  type UpdateChannelInput,
-} from "@/components/channels/update-channel-dialog";
 import { useState } from "react";
 import type { Channel } from "@/types";
-import toast from "react-hot-toast";
 import { Route as ChatRoute } from "../route";
 import { InboxIcon } from "lucide-react";
 import { UserCard } from "@/components/user/user-card";
@@ -20,12 +13,6 @@ export const Route = createFileRoute("/chat/inbox/")({
 
 function RouteComponent() {
   const { channels, user } = ChatRoute.useLoaderData();
-  const router = useRouter();
-
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-
-  const createChannel = useCreateChannel();
-  const updateChannel = useUpdateChannel();
 
   return (
     <div className="space-y-6">

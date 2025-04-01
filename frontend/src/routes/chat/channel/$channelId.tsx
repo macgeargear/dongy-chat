@@ -87,7 +87,6 @@ function ChannelRoomPage() {
   const { sendMessage } = useChatSocket(
     channelId,
     user!,
-    activeUser,
     onMessage,
     onActiveUser,
   );
