@@ -8,6 +8,8 @@ export const activeUsers: Record<
   { socketId: string; user: User }[]
 > = {};
 
+export const allActiveUsers: User[] = [];
+
 export function registerSocket(app: FastifyInstance) {
   // const io: Server = app.io;
   const io = (app as any).io as Server;
@@ -32,7 +34,15 @@ export function registerSocket(app: FastifyInstance) {
 
   io.on("connection", (socket) => {
     const user = socket.data.user;
+
     console.log(`${user.username} connected [${socket.id}]`);
+
+    allActiveUsers.push(user);
+    socket.on("get_all_active_users", () => {
+      socket.emit("all_active_users", allActiveUsers);
+    });
+
+    console.log("all-active-users ", allActiveUsers);
 
     socket.on("join_channel", ({ channelId, user }) => {
       if (!user) return;
