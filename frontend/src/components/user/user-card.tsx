@@ -10,14 +10,18 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { useNavigate } from "@tanstack/react-router";
+import { cn, statusColors } from "@/lib/utils";
 
 interface UserCardProps {
   channel?: Channel;
+  allActiveUser: User[];
   user: User;
 }
 
-export function UserCard({ user, channel }: UserCardProps) {
+export function UserCard({ user, channel, allActiveUser }: UserCardProps) {
   const navigate = useNavigate();
+
+  const statusColor = statusColors["online"];
 
   return (
     <Card className="transition-shadow duration-200 border border-border/60 hover:shadow-lg rounded-xl overflow-hidden bg-background/80 backdrop-blur">
@@ -30,6 +34,15 @@ export function UserCard({ user, channel }: UserCardProps) {
                 {user.displayName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
+            {allActiveUser.some((activeUser) => activeUser.id === user.id) ? (
+              <span
+                className={cn(
+                  "absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-background",
+                  statusColor,
+                )}
+                aria-hidden="true"
+              />
+            ) : null}
           </div>
 
           <div className="flex-1 min-w-0">

@@ -1,5 +1,6 @@
 import { UserCard } from "@/components/user/user-card";
 import { UserCardSkeleton } from "@/components/user/user-card-skeleton";
+import { useAllActiveUsers } from "@/hooks/user/use-all-active-users";
 import { useUsers } from "@/hooks/user/use-users";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -9,6 +10,9 @@ export const Route = createFileRoute("/chat/users/")({
 
 function RouteComponent() {
   const { data: users, isLoading } = useUsers();
+  const { activeUsers } = useAllActiveUsers();
+
+  console.log(activeUsers);
 
   if (isLoading) {
     return (
@@ -33,7 +37,9 @@ function RouteComponent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {users?.map((user) => <UserCard key={user.id} user={user} />)}
+            {users?.map((user) => (
+              <UserCard key={user.id} user={user} allActiveUser={activeUsers} />
+            ))}
           </div>
         )}
       </div>
