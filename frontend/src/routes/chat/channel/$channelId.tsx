@@ -171,7 +171,7 @@ function ChannelRoomPage() {
   console.log("Active Users: ", activeUser);
 
   return (
-    <div className="flex flex-col w-full p-4 mx-auto h-[85vh]">
+    <div className="flex flex-col w-full h-[85vh]">
       <Card
         className={`flex flex-col h-full shadow-md border-slate-200 theme-${theme}`}
       >
@@ -224,7 +224,7 @@ function ChannelRoomPage() {
             <span className="text-xl">🎨</span>
             <Select onValueChange={handleThemeChange}>
               <SelectTrigger className="w-fit">
-                <SelectValue placeholder="Select Theme" />
+                <SelectValue placeholder={channel.theme} />
               </SelectTrigger>
               <SelectContent>
                 {styleOptions.map((style) => (
@@ -310,7 +310,9 @@ function ChannelRoomPage() {
                             {msg.sender.username}
                           </p>
                         )}
-                        <div className="break-words">{msg.content}</div>
+                        <div className="break-words max-w-xs">
+                          {msg.content}
+                        </div>
                         <div className="text-xs mt-1 text-right text-muted-foreground">
                           {formatTime(new Date(msg.createdAt))}
                         </div>

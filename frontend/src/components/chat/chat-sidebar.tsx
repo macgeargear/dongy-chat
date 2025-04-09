@@ -21,6 +21,7 @@ import {
   GroupIcon,
   HomeIcon,
   InboxIcon,
+  LockIcon,
   PlusIcon,
   User2Icon,
   UserIcon,
@@ -40,6 +41,7 @@ import CreateChannelDialog, {
 } from "../channels/create-channel-dialog";
 import toast from "react-hot-toast";
 import { SwipeSidebarProvider } from "./swipe-sidebar-provider";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
@@ -113,15 +115,30 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                       .map((channel) => (
                         <SidebarMenuSubItem key={channel.name}>
                           <SidebarMenuButton asChild>
-                            <Link
-                              to="/chat/channel/$channelId"
-                              params={{
-                                channelId: channel.id,
-                              }}
-                            >
-                              <GroupIcon className="h-4 w-4" />
-                              <span>{channel.name}</span>
-                            </Link>
+                            {user &&
+                            channel.channelMembers
+                              .map((cm) => cm.user.id)
+                              .includes(user.id) ? (
+                              <Link
+                                to="/chat/channel/$channelId"
+                                params={{
+                                  channelId: channel.id,
+                                }}
+                              >
+                                <GroupIcon className="h-4 w-4" />
+                                <span>{channel.name}</span>
+                              </Link>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger className="flex items-center ml-2 gap-2">
+                                  <LockIcon className="h-4 w-4" />
+                                  <span>{channel.name}</span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  You don't have access to this channel
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
                           </SidebarMenuButton>
                         </SidebarMenuSubItem>
                       ))}

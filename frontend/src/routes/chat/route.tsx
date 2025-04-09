@@ -18,7 +18,7 @@ function RouteComponent() {
     <div className="flex h-screen overflow-hidden w-full">
       <ChatSidebar channels={channels} user={user}>
         <main className="flex-1 flex flex-col bg-background">
-          <section className="flex-1 overflow-auto px-4 py-6">
+          <section className="flex-1 overflow-auto">
             <Outlet />
           </section>
         </main>
