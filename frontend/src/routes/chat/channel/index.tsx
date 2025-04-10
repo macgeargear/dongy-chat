@@ -13,14 +13,21 @@ import { useState } from "react";
 import type { Channel } from "@/types";
 import toast from "react-hot-toast";
 import { Route as ChatRoute } from "../route";
+import {
+  useChannels,
+  useChannelsQueryOptions,
+} from "@/hooks/channel/use-channels";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { channels, user } = ChatRoute.useLoaderData();
+  const { user } = ChatRoute.useLoaderData();
   const router = useRouter();
+
+  const { data: channels } = useSuspenseQuery(useChannelsQueryOptions());
 
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
