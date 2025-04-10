@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
+  DotIcon,
   EditIcon,
+  EllipsisIcon,
   LockIcon,
   MessageCircleIcon,
   TrashIcon,
@@ -28,6 +30,12 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useJoinChannel } from "@/hooks/channel/use-join-channel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface ChannelCardProps {
   channel: Channel;
@@ -214,6 +222,43 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
           <div className="flex items-center gap-2 text-xs">
             <UsersIcon className="h-3 w-3" />
             {channel?.channelMembers?.length} members
+            <div className="flex flex items-center -space-x-3">
+              {channel.channelMembers.slice(0, 4).map((cm) => {
+                const { imageUrl, displayName } = cm.user;
+                return (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Avatar key={cm.userId} className="border">
+                        <AvatarImage src={imageUrl} />
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{displayName}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+              {channel.channelMembers.length > 2 && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <EllipsisIcon className="bg-white border relative flex size-8 shrink-0 overflow-hidden rounded-full" />
+                  </TooltipTrigger>
+                  <TooltipContent className="flex flex-col gap-2 p-2">
+                    {channel.channelMembers.map((cm) => {
+                      const imageUrl = cm.user.imageUrl;
+                      return (
+                        <div className="flex items-center gap-2">
+                          <Avatar key={cm.userId} className="border">
+                            <AvatarImage src={imageUrl} />
+                          </Avatar>
+                          <p>{cm.user.displayName}</p>
+                        </div>
+                      );
+                    })}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <MessageCircleIcon className="h-3 w-3" />
