@@ -66,15 +66,15 @@ function ChannelRoomPage() {
 
   useEffect(() => {
     if (initialMessages) {
-      setTimeout(() => {
-        setMessages(initialMessages);
-        initialMessages.forEach((m) => pendingMessages.current.add(m.id));
-      }, 0);
+      setMessages(initialMessages);
+      initialMessages.forEach((m) => pendingMessages.current.add(m.id));
     }
   }, [initialMessages]);
 
   const onMessage = useCallback((msg: Message) => {
-    if (msg.id && pendingMessages.current.has(msg.id)) return;
+    if (!msg.id) return;
+    if (pendingMessages.current.has(msg.id)) return;
+    console.log("message: ", msg);
     pendingMessages.current.add(msg.id);
     setMessages((prev) => [...prev, msg]);
   }, []);
@@ -99,7 +99,8 @@ function ChannelRoomPage() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage({
+
+    const newMessage: Message = {
       channel,
       channelId,
       sender: user!,
@@ -108,7 +109,14 @@ function ChannelRoomPage() {
       content: input,
       senderId: user!.id,
       id: uuidv4(),
+    };
+
+    setMessages((prev) => {
+      pendingMessages.current.add(newMessage.id);
+      return [...prev, newMessage];
     });
+
+    sendMessage(newMessage);
     setInput("");
     stopTyping();
     inputRef.current?.focus();
@@ -168,8 +176,6 @@ function ChannelRoomPage() {
     }
   };
 
-  console.log("Active Users: ", activeUser);
-
   return (
     <div className="flex flex-col w-full h-[85vh]">
       <Card
@@ -199,8 +205,8 @@ function ChannelRoomPage() {
             {activeUser.length > 0 && (
               <div className="text-sm text-muted-foreground ml-4">
                 <div className="flex items-center gap-1">
-                  {activeUser.map((user) => (
-                    <TooltipProvider>
+                  {activeUser.map((user, index) => (
+                    <TooltipProvider key={index}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Avatar className="h-8 w-8 border">

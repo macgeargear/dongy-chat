@@ -16,12 +16,18 @@ export function useChatSocket(
     return () => {
       socket.emit("leave_channel", { channelId, user });
       socket.off("receive_message", onMessage);
-      socket.off("activeUser", onActiveUser);
+      socket.off("activeUsers", onActiveUser);
     };
   }, [channelId, user]);
 
   const sendMessage = (msg: Message) => {
-    socket.emit("send_message", { channelId, content: msg.content, msg });
+    onMessage(msg);
+    socket.emit("send_message", {
+      channelId,
+      content: msg.content,
+      msg,
+      id: msg.id,
+    });
   };
 
   return { sendMessage };
