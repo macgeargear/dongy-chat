@@ -13,11 +13,8 @@ import { useState } from "react";
 import type { Channel } from "@/types";
 import toast from "react-hot-toast";
 import { Route as ChatRoute } from "../route";
-import {
-  useChannels,
-  useChannelsQueryOptions,
-} from "@/hooks/channel/use-channels";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useChannelsQueryOptions } from "@/hooks/channel/use-channels";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/chat/channel/")({
   component: RouteComponent,

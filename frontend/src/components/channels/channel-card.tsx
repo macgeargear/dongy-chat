@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
-  DotIcon,
   EditIcon,
   EllipsisIcon,
   LockIcon,
@@ -30,12 +29,7 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useJoinChannel } from "@/hooks/channel/use-join-channel";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface ChannelCardProps {
   channel: Channel;
