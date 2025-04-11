@@ -49,6 +49,7 @@ export function UserCard({ user, channel, allActiveUser }: UserCardProps) {
             <h3 className="text-lg font-semibold text-foreground truncate">
               {user.displayName}
             </h3>
+            <p className="text-sm text-muted-foreground">@{user.username}</p>
           </div>
           {channel && (
             <TooltipProvider>
