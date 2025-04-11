@@ -32,12 +32,13 @@ export function registerSocket(app: FastifyInstance) {
     }
   });
 
-  io.on("connection", (socket) => {
-    const user = socket.data.user;
+  io.on("connection", async (socket) => {
+    const userId = socket.data.user.id;
+    const user = await prisma.user.findFirst({ where: { id: userId } });
 
-    console.log(`${user.username} connected [${socket.id}]`);
+    console.log(`${user!.username} connected [${socket.id}]`);
 
-    allActiveUsers.push(user);
+    allActiveUsers.push(user!);
     socket.on("get_all_active_users", () => {
       socket.emit("all_active_users", allActiveUsers);
     });
@@ -81,13 +82,27 @@ export function registerSocket(app: FastifyInstance) {
       async ({
         channelId,
         content,
+        id,
       }: {
         channelId: string;
         content: string;
+        id: string;
       }) => {
+        io.to(channelId).emit("receive_message", {
+          id,
+          content,
+          channelId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          senderId: user!.id,
+          sender: user,
+          channel: { id: channelId }, // minimal info to render
+        });
+
         const message = await prisma.message.create({
           data: {
-            senderId: user.id,
+            id,
+            senderId: user!.id,
             channelId,
             content,
           },
@@ -97,27 +112,17 @@ export function registerSocket(app: FastifyInstance) {
           },
         });
 
-        io.to(channelId).emit("receive_message", message);
+        // io.to(channelId).emit("receive_message", message);
       },
     );
 
     // Typing events
     socket.on("typing", (channelId: string) => {
-      socket.to(channelId).emit("typing", { username: user.username });
+      socket.to(channelId).emit("typing", { username: user!.username });
     });
 
     socket.on("stop_typing", (channelId: string) => {
-      socket.to(channelId).emit("stop_typing", { username: user.username });
-    });
-
-    socket.on("admin_announce", (message: string) => {
-      if (user.role === "admin") {
-        io.emit("admin_announcement", {
-          admin: user.username,
-          message,
-          time: new Date().toISOString(),
-        });
-      }
+      socket.to(channelId).emit("stop_typing", { username: user!.username });
     });
 
     socket.on("disconnect", () => {
