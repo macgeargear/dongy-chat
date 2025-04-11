@@ -40,7 +40,7 @@ export function useAuth() {
 
   const logout = () => {
     localStorage.clear();
-    window.location.href = "/";
+    window.location.href = "/auth";
   };
 
   const signup = useMutation({
