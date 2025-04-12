@@ -42,6 +42,7 @@ import CreateChannelDialog, {
 import toast from "react-hot-toast";
 import { SwipeSidebarProvider } from "./swipe-sidebar-provider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
@@ -58,6 +59,7 @@ interface ChatSidebarProps {
 
 export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
   const createChannel = useCreateChannel();
+  const { logout } = useAuth();
 
   const handleCreateChannel = async (data: CreateChannelInput) => {
     toast.promise(createChannel.mutateAsync(data), {
@@ -172,7 +174,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                               channel.isPrivate &&
                               channel.channelMembers
                                 .map((member) => member.userId)
-                                .includes(user.id),
+                                .includes(user.id)
                           )
                           .map((channel) => (
                             <SidebarMenuSubItem key={channel.name}>
@@ -188,7 +190,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                                     <span>
                                       {
                                         channel.channelMembers.filter(
-                                          (u) => u.userId != user?.id,
+                                          (u) => u.userId != user?.id
                                         )[0].user.displayName
                                       }
                                     </span>
@@ -221,6 +223,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                         <Button
                           className="w-full h-fit hover:bg-red-500 hover:text-white"
                           variant="ghost"
+                          onClick={logout}
                         >
                           Sign out
                         </Button>

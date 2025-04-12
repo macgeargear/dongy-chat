@@ -38,6 +38,11 @@ export function useAuth() {
     },
   });
 
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/auth";
+  };
+
   const signup = useMutation({
     mutationFn: async (data: {
       username: string;
@@ -63,5 +68,6 @@ export function useAuth() {
     isError,
     login: login.mutateAsync,
     signup: signup.mutateAsync,
+    logout,
   };
 }
