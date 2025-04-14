@@ -27,7 +27,7 @@ model Message {
   channelId String
   channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
   senderId  String
-  sender    User     @relation(fields: [senderId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
 
 model Channel {
@@ -46,7 +46,7 @@ model ChannelMember {
   channelId           String
   channel             Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
   userId              String
-  user                User     @relation(fields: [userId], references: [id])
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 

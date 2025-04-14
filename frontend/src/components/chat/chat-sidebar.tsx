@@ -69,6 +69,8 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
     });
   };
 
+  console.log(channels);
+
   return (
     <SidebarProvider>
       <SwipeSidebarProvider>
@@ -174,7 +176,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                               channel.isPrivate &&
                               channel.channelMembers
                                 .map((member) => member.userId)
-                                .includes(user.id)
+                                .includes(user.id),
                           )
                           .map((channel) => (
                             <SidebarMenuSubItem key={channel.name}>
@@ -190,7 +192,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                                     <span>
                                       {
                                         channel.channelMembers.filter(
-                                          (u) => u.userId != user?.id
+                                          (u) => u.userId != user?.id,
                                         )[0].user.displayName
                                       }
                                     </span>
