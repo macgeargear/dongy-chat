@@ -1,12 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-
-// import { Route as ChatRoute } from "../route";
 import { InboxIcon } from "lucide-react";
 import { UserCard } from "@/components/user/user-card";
 import { getUsers } from "@/hooks/user/use-users";
 import { getChannels } from "@/hooks/channel/use-channels";
 import type { Channel } from "@/types";
 import { useAuth } from "@/hooks/use-auth";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/chat/inbox/")({
   loader: async () => {
@@ -17,11 +16,36 @@ export const Route = createFileRoute("/chat/inbox/")({
   component: RouteComponent,
 });
 
+const useUserChannelMap = (channels: Channel[]) => {
+  const { user: currentUser } = useAuth();
+
+  return useMemo(() => {
+    const map = new Map<string, string>();
+
+    if (!currentUser) return map;
+
+    for (const channel of channels) {
+      if (channel.isPrivate && channel.channelMembers.length === 2) {
+        const userIds = channel.channelMembers.map((cm) => cm.userId);
+
+        if (userIds.includes(currentUser.id)) {
+          const otherUserId = userIds.find((id) => id !== currentUser.id);
+          if (otherUserId) {
+            map.set(otherUserId, channel.id);
+          }
+        }
+      }
+    }
+
+    return map;
+  }, [channels, currentUser?.id]);
+};
+
 function RouteComponent() {
-  // const { channels, user } = ChatRoute.useLoaderData();
   const { users, channels } = Route.useLoaderData();
   const router = useRouter();
-  const { user } = useAuth();
+
+  const userChannelMap = useUserChannelMap(channels);
 
   return (
     <div className="space-y-6">
@@ -32,26 +56,12 @@ function RouteComponent() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {users.map((u) => {
-          const isMember = (channel: Channel, m1: string, m2: string) => {
-            let n = 0;
-            for (let c of channel.channelMembers) {
-              if (c.userId === m1 || c.userId === m2) {
-                n++;
-              }
-            }
-            return n === 2;
-          };
-
-          const channelId = channels.find(
-            (channel) =>
-              channel.isPrivate && isMember(channel, u.id, user?.id ?? "")
-          )?.id;
-
+          const channelId = userChannelMap.get(u.id);
           return (
             <div
               key={u.id}
               onClick={() =>
-                channelId !== undefined &&
+                channelId &&
                 router.navigate({ to: `/chat/channel/${channelId}` })
               }
             >
@@ -59,24 +69,6 @@ function RouteComponent() {
             </div>
           );
         })}
-
-        {/* {channels
-          .filter(
-            (channel) =>
-              channel.isPrivate &&
-              channel.channelMembers
-                .map((member) => member.userId)
-                .includes(user.id),
-          )
-          ?.sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-          )
-          .map((channel) =>
-            channel.channelMembers.map((user) => (
-              <UserCard key={channel.id} user={user.user} channel={channel} />
-            )),
-          )} */}
       </div>
     </div>
   );
