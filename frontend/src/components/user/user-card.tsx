@@ -9,8 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useNavigate } from "@tanstack/react-router";
 import { cn, statusColors } from "@/lib/utils";
+import { useNavigate } from "@tanstack/react-router";
 
 interface UserCardProps {
   channel?: Channel;
@@ -40,7 +40,7 @@ export function UserCard({ user, channel, onlineUsers }: UserCardProps) {
               <span
                 className={cn(
                   "absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-background",
-                  statusColor,
+                  statusColor
                 )}
                 aria-hidden="true"
               />
