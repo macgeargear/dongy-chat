@@ -5,6 +5,7 @@ import {
   EllipsisIcon,
   LockIcon,
   MessageCircleIcon,
+  PlusIcon,
   TrashIcon,
   UserPlusIcon,
   UsersIcon,
@@ -217,7 +218,7 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
             <UsersIcon className="h-3 w-3" />
             {channel?.channelMembers?.length} members
             <div className="flex flex items-center -space-x-3">
-              {channel.channelMembers.slice(0, 4).map((cm) => {
+              {channel.channelMembers.slice(0, 3).map((cm) => {
                 const { imageUrl, displayName } = cm.user;
                 return (
                   <Tooltip>
@@ -232,23 +233,29 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
                   </Tooltip>
                 );
               })}
-              {channel.channelMembers.length > 2 && (
+              {channel.channelMembers.length > 3 && (
                 <Tooltip>
                   <TooltipTrigger>
-                    <EllipsisIcon className="bg-white border relative flex size-8 shrink-0 overflow-hidden rounded-full" />
+                    <Avatar className="border">
+                      <AvatarFallback>
+                        +{channel.channelMembers.length - 3}
+                      </AvatarFallback>
+                    </Avatar>
                   </TooltipTrigger>
                   <TooltipContent className="flex flex-col gap-2 p-2">
-                    {channel.channelMembers.map((cm) => {
-                      const imageUrl = cm.user.imageUrl;
-                      return (
-                        <div className="flex items-center gap-2">
-                          <Avatar key={cm.userId} className="border">
-                            <AvatarImage src={imageUrl} />
-                          </Avatar>
-                          <p>{cm.user.displayName}</p>
-                        </div>
-                      );
-                    })}
+                    {channel.channelMembers
+                      .slice(3, channel.channelMembers.length)
+                      .map((cm) => {
+                        const imageUrl = cm.user.imageUrl;
+                        return (
+                          <div className="flex items-center gap-2">
+                            <Avatar key={cm.userId} className="border">
+                              <AvatarImage src={imageUrl} />
+                            </Avatar>
+                            <p>{cm.user.displayName}</p>
+                          </div>
+                        );
+                      })}
                   </TooltipContent>
                 </Tooltip>
               )}

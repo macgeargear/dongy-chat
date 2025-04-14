@@ -14,14 +14,16 @@ import { cn, statusColors } from "@/lib/utils";
 
 interface UserCardProps {
   channel?: Channel;
-  allActiveUser?: User[];
+  onlineUsers?: User[];
   user: User;
 }
 
-export function UserCard({ user, channel, allActiveUser }: UserCardProps) {
+export function UserCard({ user, channel, onlineUsers }: UserCardProps) {
   const navigate = useNavigate();
 
   const statusColor = statusColors["online"];
+
+  console.log(onlineUsers);
 
   return (
     <Card className="transition-shadow duration-200 border border-border/60 hover:shadow-lg rounded-xl overflow-hidden bg-background/80 backdrop-blur">
@@ -34,7 +36,7 @@ export function UserCard({ user, channel, allActiveUser }: UserCardProps) {
                 {user.displayName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            {allActiveUser?.some((activeUser) => activeUser.id === user.id) ? (
+            {onlineUsers?.some((ou) => ou.id === user.id) ? (
               <span
                 className={cn(
                   "absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-background",
