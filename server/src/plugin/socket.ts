@@ -8,7 +8,7 @@ export const activeUsers: Record<
   { socketId: string; user: User }[]
 > = {};
 
-export const allActiveUsers: User[] = [];
+let onlineUsers: { user: User; socketId: string }[] = [];
 
 export function registerSocket(app: FastifyInstance) {
   // const io: Server = app.io;
@@ -36,14 +36,22 @@ export function registerSocket(app: FastifyInstance) {
     const userId = socket.data.user.id;
     const user = await prisma.user.findFirst({ where: { id: userId } });
 
-    console.log(`${user!.username} connected [${socket.id}]`);
+    console.log(user);
+    // console.log(`${user!.username} connected [${socket.id}]`);
 
-    allActiveUsers.push(user!);
-    socket.on("get_all_active_users", () => {
-      socket.emit("all_active_users", allActiveUsers);
+    socket.on("get-users-request", () => {
+      socket.emit("get-users", onlineUsers);
     });
 
-    console.log("all-active-users ", allActiveUsers);
+    socket.on("new-user-add", (newUser) => {
+      if (!onlineUsers.some((ou) => ou.user.id === newUser.id)) {
+        // if user is not added before
+        onlineUsers.push({ user: newUser, socketId: socket.id });
+        console.log("new user is here!", onlineUsers);
+      }
+      // send all active users to new user
+      io.emit("get-users", onlineUsers);
+    });
 
     socket.on("join_channel", ({ channelId, user }) => {
       if (!user) return;
@@ -99,7 +107,7 @@ export function registerSocket(app: FastifyInstance) {
           channel: { id: channelId }, // minimal info to render
         });
 
-        const message = await prisma.message.create({
+        await prisma.message.create({
           data: {
             id,
             senderId: user!.id,
@@ -111,8 +119,6 @@ export function registerSocket(app: FastifyInstance) {
             channel: true,
           },
         });
-
-        // io.to(channelId).emit("receive_message", message);
       },
     );
 
@@ -137,6 +143,19 @@ export function registerSocket(app: FastifyInstance) {
           io.to(channelId).emit("activeUsers", activeUsers[channelId]);
         }
       }
+
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log("user disconnected", onlineUsers);
+      // send all online users to all users
+      io.emit("get-users", onlineUsers);
+    });
+
+    socket.on("offline", () => {
+      // remove user from active users
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log("user is offline", onlineUsers);
+      // send all online users to all users
+      io.emit("get-users", onlineUsers);
     });
   });
 }
