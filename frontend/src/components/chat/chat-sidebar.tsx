@@ -212,7 +212,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <SidebarMenuButton>
-                        <User2Icon /> Username
+                        <User2Icon /> {user?.displayName}
                         <ChevronUpIcon className="ml-auto" />
                       </SidebarMenuButton>
                     </DropdownMenuTrigger>
