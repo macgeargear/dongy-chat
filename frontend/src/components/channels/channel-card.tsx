@@ -2,10 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
   EditIcon,
-  EllipsisIcon,
   LockIcon,
   MessageCircleIcon,
-  PlusIcon,
   TrashIcon,
   UserPlusIcon,
   UsersIcon,

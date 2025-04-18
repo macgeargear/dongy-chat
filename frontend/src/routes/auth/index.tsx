@@ -4,7 +4,7 @@ import {
   Link as RouterLink,
   useNavigate,
 } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +29,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LockIcon } from "lucide-react";
-import { socket } from "@/lib/socket";
 
 const signupFormSchema = z.object({
   username: z.string().min(2, {
