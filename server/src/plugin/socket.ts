@@ -8,7 +8,7 @@ export const activeUsers: Record<
   { socketId: string; user: User }[]
 > = {};
 
-export const allActiveUsers: User[] = [];
+let onlineUsers: { user: User; socketId: string }[] = [];
 
 export function registerSocket(app: FastifyInstance) {
   // const io: Server = app.io;
@@ -32,17 +32,26 @@ export function registerSocket(app: FastifyInstance) {
     }
   });
 
-  io.on("connection", (socket) => {
-    const user = socket.data.user;
+  io.on("connection", async (socket) => {
+    const userId = socket.data.user.id;
+    const user = await prisma.user.findFirst({ where: { id: userId } });
 
-    console.log(`${user.username} connected [${socket.id}]`);
+    console.log(user);
+    // console.log(`${user!.username} connected [${socket.id}]`);
 
-    allActiveUsers.push(user);
-    socket.on("get_all_active_users", () => {
-      socket.emit("all_active_users", allActiveUsers);
+    socket.on("get-users-request", () => {
+      socket.emit("get-users", onlineUsers);
     });
 
-    console.log("all-active-users ", allActiveUsers);
+    socket.on("new-user-add", (newUser) => {
+      if (!onlineUsers.some((ou) => ou.user.id === newUser.id)) {
+        // if user is not added before
+        onlineUsers.push({ user: newUser, socketId: socket.id });
+        console.log("new user is here!", onlineUsers);
+      }
+      // send all active users to new user
+      io.emit("get-users", onlineUsers);
+    });
 
     socket.on("join_channel", ({ channelId, user }) => {
       if (!user) return;
@@ -81,13 +90,27 @@ export function registerSocket(app: FastifyInstance) {
       async ({
         channelId,
         content,
+        id,
       }: {
         channelId: string;
         content: string;
+        id: string;
       }) => {
-        const message = await prisma.message.create({
+        io.to(channelId).emit("receive_message", {
+          id,
+          content,
+          channelId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          senderId: user!.id,
+          sender: user,
+          channel: { id: channelId }, // minimal info to render
+        });
+
+        await prisma.message.create({
           data: {
-            senderId: user.id,
+            id,
+            senderId: user!.id,
             channelId,
             content,
           },
@@ -96,28 +119,16 @@ export function registerSocket(app: FastifyInstance) {
             channel: true,
           },
         });
-
-        io.to(channelId).emit("receive_message", message);
       },
     );
 
     // Typing events
     socket.on("typing", (channelId: string) => {
-      socket.to(channelId).emit("typing", { username: user.username });
+      socket.to(channelId).emit("typing", { username: user!.username });
     });
 
     socket.on("stop_typing", (channelId: string) => {
-      socket.to(channelId).emit("stop_typing", { username: user.username });
-    });
-
-    socket.on("admin_announce", (message: string) => {
-      if (user.role === "admin") {
-        io.emit("admin_announcement", {
-          admin: user.username,
-          message,
-          time: new Date().toISOString(),
-        });
-      }
+      socket.to(channelId).emit("stop_typing", { username: user!.username });
     });
 
     socket.on("disconnect", () => {
@@ -132,6 +143,19 @@ export function registerSocket(app: FastifyInstance) {
           io.to(channelId).emit("activeUsers", activeUsers[channelId]);
         }
       }
+
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log("user disconnected", onlineUsers);
+      // send all online users to all users
+      io.emit("get-users", onlineUsers);
+    });
+
+    socket.on("offline", () => {
+      // remove user from active users
+      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+      console.log("user is offline", onlineUsers);
+      // send all online users to all users
+      io.emit("get-users", onlineUsers);
     });
   });
 }

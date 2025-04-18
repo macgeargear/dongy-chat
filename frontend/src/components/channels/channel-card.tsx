@@ -2,7 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import {
   EditIcon,
+  EllipsisIcon,
+  LockIcon,
   MessageCircleIcon,
+  PlusIcon,
   TrashIcon,
   UserPlusIcon,
   UsersIcon,
@@ -24,6 +27,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUsers } from "@/hooks/user/use-users";
 import { Link, useRouter } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { useJoinChannel } from "@/hooks/channel/use-join-channel";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface ChannelCardProps {
   channel: Channel;
@@ -35,9 +42,12 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const deleteChannel = useDeleteChannel();
 
+  const { user } = useAuth();
+
   const { data: allUsers } = useUsers();
 
   const addUserChannel = useAddUserChannel();
+  const joinChannel = useJoinChannel();
 
   const handleDelete = async () => {
     await deleteChannel.mutateAsync(channel.id);
@@ -58,12 +68,55 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
         error: "Failed to add user to channel",
       },
     );
+
     router.invalidate();
+  };
+
+  const handleJoinChannel = async () => {
+    toast.promise(
+      joinChannel.mutateAsync({
+        channelId: channel.id,
+        userId: user?.id!,
+      }),
+      {
+        loading: "Joining to channel...",
+        success: "Join successfully",
+        error: "Failed to join to channel",
+      },
+    );
   };
 
   return (
     <>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card
+        className={cn("relative hover:shadow-md transition-shadow", {
+          "bg-muted":
+            user &&
+            !channel.channelMembers.map((cm) => cm.userId).includes(user?.id),
+        })}
+      >
+        {user &&
+          !channel.channelMembers.map((cm) => cm.userId).includes(user?.id) && (
+            <div className="absolute inset-0 backdrop-blur-[2px] bg-background/50 z-10 flex flex-col items-center justify-center">
+              <LockIcon className="hover:rotate-45 transition-transform w-8 text-muted-foreground mb-2" />
+              <h1 className="text-lg font-bold">{channel.name}</h1>
+              <p className="text-xs text-muted-foreground font-medium">
+                Not a member
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-2 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleJoinChannel();
+                }}
+              >
+                Join Channel
+              </Button>
+            </div>
+          )}
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
@@ -160,18 +213,59 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
             </div>
           </div>
         </CardHeader>
-
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <div className="flex items-center gap-2 text-xs">
             <UsersIcon className="h-3 w-3" />
             {channel?.channelMembers?.length} members
+            <div className="flex flex items-center -space-x-3">
+              {channel.channelMembers.slice(0, 3).map((cm) => {
+                const { imageUrl, displayName } = cm.user;
+                return (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Avatar key={cm.userId} className="border">
+                        <AvatarImage src={imageUrl} />
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{displayName}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+              {channel.channelMembers.length > 3 && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Avatar className="border">
+                      <AvatarFallback>
+                        +{channel.channelMembers.length - 3}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+                  <TooltipContent className="flex flex-col gap-2 p-2">
+                    {channel.channelMembers
+                      .slice(3, channel.channelMembers.length)
+                      .map((cm) => {
+                        const imageUrl = cm.user.imageUrl;
+                        return (
+                          <div className="flex items-center gap-2">
+                            <Avatar key={cm.userId} className="border">
+                              <AvatarImage src={imageUrl} />
+                            </Avatar>
+                            <p>{cm.user.displayName}</p>
+                          </div>
+                        );
+                      })}
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <MessageCircleIcon className="h-3 w-3" />
             {channel?.messages?.length} messages
           </div>
         </CardContent>
-
         <DeleteChannelDialog
           isOpen={isDeleteOpen}
           onClose={() => setIsDeleteOpen(false)}
@@ -185,6 +279,14 @@ export function ChannelCard({ channel, onEdit }: ChannelCardProps) {
         onConfirm={handleDelete}
         channelName={channel.name}
       />
+      {/* <JoinChannelDialog
+        isOpen={isJoinDialogOpen}
+        onClose={() => setIsJoinDialogOpen(false)}
+        onConfirm={() => {
+          if (user) handleAddUserChannel(user.id);
+        }}
+        channelName={channel.name}
+      />{" "} */}
     </>
   );
 }

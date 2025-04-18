@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import type { Channel } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 export async function getChannels({
   includeMembers = false,
@@ -33,5 +34,12 @@ export function useChannels({
         includeMembers,
         includeMessages,
       }),
+  });
+}
+
+export function useChannelsQueryOptions() {
+  return queryOptions({
+    queryKey: ["channels"],
+    queryFn: () => getChannels(),
   });
 }

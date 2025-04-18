@@ -21,6 +21,7 @@ import {
   GroupIcon,
   HomeIcon,
   InboxIcon,
+  LockIcon,
   PlusIcon,
   User2Icon,
   UserIcon,
@@ -40,6 +41,8 @@ import CreateChannelDialog, {
 } from "../channels/create-channel-dialog";
 import toast from "react-hot-toast";
 import { SwipeSidebarProvider } from "./swipe-sidebar-provider";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 
 const items = [
   { title: "Home", to: "/chat", icon: HomeIcon },
@@ -56,6 +59,7 @@ interface ChatSidebarProps {
 
 export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
   const createChannel = useCreateChannel();
+  const { logout } = useAuth();
 
   const handleCreateChannel = async (data: CreateChannelInput) => {
     toast.promise(createChannel.mutateAsync(data), {
@@ -64,6 +68,8 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
       error: "Failed to create channel",
     });
   };
+
+  console.log(channels);
 
   return (
     <SidebarProvider>
@@ -113,15 +119,30 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                       .map((channel) => (
                         <SidebarMenuSubItem key={channel.name}>
                           <SidebarMenuButton asChild>
-                            <Link
-                              to="/chat/channel/$channelId"
-                              params={{
-                                channelId: channel.id,
-                              }}
-                            >
-                              <GroupIcon className="h-4 w-4" />
-                              <span>{channel.name}</span>
-                            </Link>
+                            {user &&
+                            channel.channelMembers
+                              .map((cm) => cm.user.id)
+                              .includes(user.id) ? (
+                              <Link
+                                to="/chat/channel/$channelId"
+                                params={{
+                                  channelId: channel.id,
+                                }}
+                              >
+                                <GroupIcon className="h-4 w-4" />
+                                <span>{channel.name}</span>
+                              </Link>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger className="flex items-center ml-2 gap-2">
+                                  <LockIcon className="h-4 w-4" />
+                                  <span>{channel.name}</span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  You don't have access to this channel
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
                           </SidebarMenuButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -204,6 +225,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
                         <Button
                           className="w-full h-fit hover:bg-red-500 hover:text-white"
                           variant="ghost"
+                          onClick={logout}
                         >
                           Sign out
                         </Button>

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import type { User } from "@/types";
+import { socket } from "@/lib/socket";
 
 export async function fetchMe(): Promise<User> {
   const token = localStorage.getItem("token");
@@ -38,6 +39,12 @@ export function useAuth() {
     },
   });
 
+  const logout = () => {
+    localStorage.clear();
+    socket.emit("offline");
+    window.location.href = "/auth";
+  };
+
   const signup = useMutation({
     mutationFn: async (data: {
       username: string;
@@ -63,5 +70,6 @@ export function useAuth() {
     isError,
     login: login.mutateAsync,
     signup: signup.mutateAsync,
+    logout,
   };
 }
