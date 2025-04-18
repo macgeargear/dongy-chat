@@ -1,7 +1,6 @@
 import { UserCard } from "@/components/user/user-card";
 import { UserCardSkeleton } from "@/components/user/user-card-skeleton";
 import { fetchMe } from "@/hooks/use-auth";
-import { useAllActiveUsers } from "@/hooks/user/use-all-active-users";
 import { useUsers } from "@/hooks/user/use-users";
 import { socket } from "@/lib/socket";
 import type { User } from "@/types";
