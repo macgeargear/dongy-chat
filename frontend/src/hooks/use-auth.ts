@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import type { User } from "@/types";
 import { socket } from "@/lib/socket";
+import { useNavigate } from "@tanstack/react-router";
 
 export async function fetchMe(): Promise<User> {
   const token = localStorage.getItem("token");
@@ -12,6 +13,7 @@ export async function fetchMe(): Promise<User> {
 
 export function useAuth() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: user,
@@ -42,7 +44,7 @@ export function useAuth() {
   const logout = () => {
     localStorage.clear();
     socket.emit("offline");
-    window.location.href = "/auth";
+    navigate({ to: "/auth" });
   };
 
   const signup = useMutation({
