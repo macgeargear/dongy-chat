@@ -124,11 +124,15 @@ export function registerSocket(app: FastifyInstance) {
 
     // Typing events
     socket.on("typing", (channelId: string) => {
-      socket.to(channelId).emit("typing", { username: user!.username });
+      socket
+        .to(channelId)
+        .emit("typing", { username: user!.username, channelId });
     });
 
     socket.on("stop_typing", (channelId: string) => {
-      socket.to(channelId).emit("stop_typing", { username: user!.username });
+      socket
+        .to(channelId)
+        .emit("stop_typing", { username: user!.username, channelId });
     });
 
     socket.on("disconnect", () => {

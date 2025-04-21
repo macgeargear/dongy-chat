@@ -3,12 +3,16 @@ import { useEffect } from "react";
 
 export function useTyping(
   channelId: string,
-  onTyping: (user: string) => void,
-  onStop: (user: string) => void,
+  onTyping: (user: string, channelId: string) => void,
+  onStop: (user: string, channelId: string) => void,
 ) {
   useEffect(() => {
-    socket.on("typing", ({ username }) => onTyping(username));
-    socket.on("stop_typing", ({ username }) => onStop(username));
+    socket.on("typing", ({ username, channelId }) =>
+      onTyping(username, channelId),
+    );
+    socket.on("stop_typing", ({ username, channelId }) =>
+      onStop(username, channelId),
+    );
 
     return () => {
       socket.off("typing", onTyping);

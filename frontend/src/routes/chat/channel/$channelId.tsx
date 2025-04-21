@@ -93,8 +93,14 @@ function ChannelRoomPage() {
 
   const { typing, stopTyping } = useTyping(
     channelId,
-    (username) => setTypingUsers((u) => [...new Set([...u, username])]),
-    (username) => setTypingUsers((u) => u.filter((x) => x !== username)),
+    (username, _channelId) => {
+      if (_channelId === channelId)
+        setTypingUsers((u) => [...new Set([...u, username])]);
+    },
+    (username, _channelId) => {
+      if (_channelId === channelId)
+        setTypingUsers((u) => u.filter((x) => x !== username));
+    },
   );
 
   const handleSend = () => {
@@ -112,8 +118,11 @@ function ChannelRoomPage() {
     };
 
     setMessages((prev) => {
-      pendingMessages.current.add(newMessage.id);
-      return [...prev, newMessage];
+      if (newMessage.channelId === channelId) {
+        pendingMessages.current.add(newMessage.id);
+        return [...prev, newMessage];
+      }
+      return prev;
     });
 
     sendMessage(newMessage);
