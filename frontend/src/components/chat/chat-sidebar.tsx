@@ -45,7 +45,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 
 const items = [
-  { title: "Home", to: "/chat", icon: HomeIcon },
   { title: "All users", to: "/chat/users", icon: UserIcon },
   { title: "All Channels", to: "/chat/channel", icon: GroupIcon },
   { title: "All Inbox", to: "/chat/inbox", icon: InboxIcon },
@@ -79,7 +78,7 @@ export function ChatSidebar({ channels, user, children }: ChatSidebarProps) {
             <SidebarHeader />
             <SidebarContent>
               <SidebarGroup>
-                <SidebarGroupLabel>Dongy Chit</SidebarGroupLabel>
+                <SidebarGroupLabel>Dongy Chat</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {items.map((item) => (
